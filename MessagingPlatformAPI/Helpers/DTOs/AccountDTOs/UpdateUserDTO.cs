@@ -1,0 +1,18 @@
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace MessagingPlatformAPI.Helpers.DTOs.AccountDTOs
+{
+    public class UpdateUserDTO
+    {
+        [Required]
+        public string FirstName { get; set; }
+        [Required]
+        public string LastName { get; set; }
+        [Required]
+        [EmailAddress(ErrorMessage = "")]
+        public string Email { get; set; }
+        [Required]
+        [RegularExpression(@"^\d{11}$", ErrorMessage = "")]
+        public string PhoneNumber { get; set; }
+    }
+}

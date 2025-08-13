@@ -23,11 +23,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Base\" />
-    <Folder Include="Helpers\DTOs\" />
     <Folder Include="Helpers\JWTconfig\" />
+    <Folder Include="Helpers\Mapping\" />
     <Folder Include="SignalrConfig\" />
-    <Folder Include="Services\" />
   </ItemGroup>
 
 </Project>
