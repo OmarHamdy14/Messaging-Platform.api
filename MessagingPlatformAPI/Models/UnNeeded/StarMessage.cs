@@ -1,4 +1,4 @@
-﻿namespace MessagingPlatformAPI.Models
+﻿namespace MessagingPlatformAPI.Models.UnNeeded
 {
     public class StarMessage
     {

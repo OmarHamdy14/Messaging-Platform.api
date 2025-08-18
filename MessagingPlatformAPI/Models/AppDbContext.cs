@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using MessagingPlatformAPI.Models.UnNeeded;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace MessagingPlatformAPI.Models
@@ -10,8 +11,5 @@ namespace MessagingPlatformAPI.Models
 
         }
         public DbSet<ApplicationUser> Users { get; set; }
-        public DbSet<Chat> Chats { get; set; }
-        public DbSet<ChatRecord> ChatRecords { get; set; }
-        public DbSet<StarMessage> StarMessages { get; set; }
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace MessagingPlatformAPI.Services.Interface
 {
-    public interface IChatService
+    public interface IGroupChatService
     {
     }
 }
