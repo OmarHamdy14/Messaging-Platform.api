@@ -18,7 +18,7 @@ namespace MessagingPlatformAPI.Services.Implementation
         }
         public async Task<GroupChat> GetById(Guid Id)
         {
-            return await _base.Get(c => c.Id == Id, "ChatRecords,Members,Admins");
+            return await _base.Get(c => c.Id == Id, "Messages");
         }
         //public async Task<List<GroupChat>> GetAllByUserId(){}
         public async Task<SimpleResponseDTO> Create(CerateGroupChatDTO model)
@@ -29,10 +29,18 @@ namespace MessagingPlatformAPI.Services.Implementation
         }
         public async Task<SimpleResponseDTO> Update(Guid GroupChaId, UpdateGroupChatDTO model)
         {
-            var groupChat = await _base.Get(c => c.Id == GroupChaId, "ChatRecords,Members,Admins");
+            var groupChat = await _base.Get(c => c.Id == GroupChaId);
+            if(groupChat == null) return new SimpleResponseDTO() { IsSuccess = false, Message = "Chat is not found" };
             _mapper.Map(groupChat, model); 
-            await _base.Create(groupChat);
-            return new SimpleResponseDTO() { IsSuccess = true, Message = "Group chat creation is done" };
+            await _base.Update(groupChat);
+            return new SimpleResponseDTO() { IsSuccess = true, Message = "Group chat update is done" };
+        }
+        public async Task<SimpleResponseDTO> Delete(Guid GroupChaId)
+        {
+            var groupChat = await _base.Get(c => c.Id == GroupChaId);
+            if (groupChat == null) return new SimpleResponseDTO() { IsSuccess = false, Message = "Chat is not found" };
+            await _base.Remove(groupChat);
+            return new SimpleResponseDTO() { IsSuccess = true, Message = "Group chat deletion is done" };
         }
     }
 }
