@@ -6,5 +6,6 @@ namespace MessagingPlatformAPI.Helpers.DTOs.GroupChatDTO
     {
         public string Name { get; set; }
         public DateTime CreatedDate { get; set; }
+        public ICollection<string> MmebersId { get; set; }
     }
 }

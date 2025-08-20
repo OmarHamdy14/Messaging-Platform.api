@@ -14,9 +14,9 @@ namespace MessagingPlatformAPI.Models
         public ApplicationUser User { get; set; }
 
         public Guid? PrivateChatId { get; set; }
-        public PrivateChat? PrivateChat { get; set; } // should it be nullable ??
+        public PrivateChat PrivateChat { get; set; } // should it be nullable ??
 
         public Guid? GroupChatId { get; set; }
-        public GroupChat? GroupChat { get; set; } // should it be nullable ??
+        public GroupChat GroupChat { get; set; } // should it be nullable ??
     }
 }

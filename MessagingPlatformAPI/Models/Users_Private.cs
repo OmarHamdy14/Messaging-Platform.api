@@ -4,9 +4,10 @@
     {
         public Guid Id { get; set; }
 
+        public string MemberId { get; set; }
+        public ApplicationUser Member { get; set; }
+
         public Guid PrivateChatId { get; set; }
         public PrivateChat PrivateChat { get; set; }
-
-        public ICollection<ApplicationUser> Users { get; set; }
     }
 }

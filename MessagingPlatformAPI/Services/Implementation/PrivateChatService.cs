@@ -11,24 +11,34 @@ namespace MessagingPlatformAPI.Services.Implementation
     public class PrivateChatService : IPrivateChatService
     {
         private readonly IEntityBaseRepository<PrivateChat> _base;
+        private readonly IEntityBaseRepository<Users_Private> _baseUsersPrivate;
         private readonly IMapper _mapper;
-        public PrivateChatService(IEntityBaseRepository<PrivateChat> @base, IMapper mapper)
+        public PrivateChatService(IEntityBaseRepository<PrivateChat> @base, IMapper mapper, IEntityBaseRepository<Users_Private> baseUsersPrivate)
         {
             _base = @base;
             _mapper = mapper;
+            _baseUsersPrivate = baseUsersPrivate;
         }
         public async Task<PrivateChat> GetById(Guid Id)
         {
-            return await _base.Get(c => c.Id == Id, "Messages");
+            return await _base.Get(c => c.Id == Id, "Messages,Members");
         }
         //public async Task<List<GroupChat>> GetAllByUserId(){}
-        /*public async Task<SimpleResponseDTO> Create(CeratePrivateChatDTO model)
+        public async Task<SimpleResponseDTO> Create(CreatePrivateChatDTO model)
         {
-            var privateChat = _mapper.Map<PrivateChat>(model);
+            // check it is not already created !
+            var privateChat = new PrivateChat()
+            {
+                Members = new List<Users_Private>()
+                {
+                    new Users_Private(){ MemberId = model.UserId},
+                    new Users_Private(){ MemberId = model.UserId2}
+                }
+            };
             await _base.Create(privateChat);
             return new SimpleResponseDTO() { IsSuccess = true, Message = "Group chat creation is done" };
         }
-        public async Task<SimpleResponseDTO> Update(Guid PrivateChatId, UpdatePrivateChatDTO model)
+        /*public async Task<SimpleResponseDTO> Update(Guid PrivateChatId, UpdatePrivateChatDTO model)
         {
             var privateChat = await _base.Get(c => c.Id == PrivateChatId);
             if (privateChat == null) return new SimpleResponseDTO() { IsSuccess = false, Message = "Chat is not found" };

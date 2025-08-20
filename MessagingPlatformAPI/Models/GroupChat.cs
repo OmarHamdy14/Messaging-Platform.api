@@ -8,7 +8,10 @@ namespace MessagingPlatformAPI.Models
         public string Name { get; set; }
         public DateTime CreatedDate { get; set; }
         public bool IsDeleted { get; set; }
+
+        public ICollection<Users_Group> Members { get; set; }
         public ICollection<Message> Messages { get; set; }
         // ChatImage
     }
 }
+// Admin - delete&add member - deletionWithRelations

@@ -18,12 +18,17 @@ namespace MessagingPlatformAPI.Services.Implementation
         }
         public async Task<GroupChat> GetById(Guid Id)
         {
-            return await _base.Get(c => c.Id == Id, "Messages");
+            return await _base.Get(c => c.Id == Id, "Messages,Members");
         }
         //public async Task<List<GroupChat>> GetAllByUserId(){}
         public async Task<SimpleResponseDTO> Create(CerateGroupChatDTO model)
         {
             var groupChat = _mapper.Map<GroupChat>(model);
+            List<Users_Group> members = new List<Users_Group>();
+            foreach(var memberId in model.MmebersId){
+                members.Add(new Users_Group() { MemberId = memberId });
+            }
+            groupChat.Members = members;
             await _base.Create(groupChat);
             return new SimpleResponseDTO() { IsSuccess = true, Message="Group chat creation is done" };
         }
