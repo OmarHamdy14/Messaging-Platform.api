@@ -10,6 +10,10 @@ namespace MessagingPlatformAPI.Models
         {
 
         }
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+        }
         public DbSet<ApplicationUser> Users { get; set; }
     }
 }
