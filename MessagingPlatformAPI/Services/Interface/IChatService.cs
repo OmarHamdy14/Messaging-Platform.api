@@ -1,4 +1,5 @@
-﻿using MessagingPlatformAPI.Helpers.DTOs.GroupChatDTO;
+﻿using MessagingPlatformAPI.Helpers.DTOs.ChatDTOs;
+using MessagingPlatformAPI.Helpers.DTOs.GroupChatDTO;
 using MessagingPlatformAPI.Helpers.DTOs.ResponsesDTOs;
 using MessagingPlatformAPI.Models;
 

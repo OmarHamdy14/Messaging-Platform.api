@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MessagingPlatformAPI.Base.Interface;
+using MessagingPlatformAPI.Helpers.DTOs.ChatDTOs;
 using MessagingPlatformAPI.Helpers.DTOs.GroupChatDTO;
 using MessagingPlatformAPI.Helpers.DTOs.ResponsesDTOs;
 using MessagingPlatformAPI.Models;
@@ -40,6 +41,13 @@ namespace MessagingPlatformAPI.Services.Implementation
             _mapper.Map(chat, model);
             await _base.Update(chat);
             return new SimpleResponseDTO() { IsSuccess = true, Message = "Chat update is done" };
+        }
+        public async Task<SimpleResponseDTO> AddUserToChat(Guid ChatId, string UserId)
+        {
+            var member = new Chat_Member() { ChatId = ChatId, MemberId = UserId };
+            var chat = await _base.Get(c => c.Id == ChatId);
+            chat.Members.Add(member);
+            return new SimpleResponseDTO() { IsSuccess=true, Message="Adding is succedded" };
         }
         public async Task<SimpleResponseDTO> Delete(Guid ChaId)
         {

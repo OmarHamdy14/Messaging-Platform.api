@@ -13,10 +13,15 @@ namespace MessagingPlatformAPI.Models
         public string UserId { get; set; }
         public ApplicationUser User { get; set; }
 
+        public Guid ChatId { get; set; }
+        public Chat Chat { get; set; } 
+
+        /*
         public Guid? PrivateChatId { get; set; }
         public PrivateChat PrivateChat { get; set; } // should it be nullable ??
 
         public Guid? GroupChatId { get; set; }
         public GroupChat GroupChat { get; set; } // should it be nullable ??
+        */
     }
 }

@@ -4,26 +4,35 @@ using MessagingPlatformAPI.Helpers.DTOs.MessageDTOs;
 using MessagingPlatformAPI.Helpers.DTOs.ResponsesDTOs;
 using MessagingPlatformAPI.Models;
 using MessagingPlatformAPI.Services.Interface;
+using Microsoft.AspNetCore.SignalR;
 
 namespace MessagingPlatformAPI.Services.Implementation
 {
     public class MessageService : IMessageService
     {
         private readonly IEntityBaseRepository<Message> _base;
+        private readonly IChatService _chatService;
+        private readonly IHubContext _hubContext;
         private readonly IMapper _mapper;
-        public MessageService(IEntityBaseRepository<Message> @base, IMapper mapper)
+        public MessageService(IEntityBaseRepository<Message> @base, IMapper mapper, IChatService chatService, IHubContext hubContext)
         {
             _base = @base;
             _mapper = mapper;
+            _chatService = chatService;
+            _hubContext = hubContext;
         }
-        public async Task<List<Message>> GetAllByPrivateChatId(Guid PrivateChatId)
+        public async Task<List<Message>> GetAllByChatId(Guid ChatId)
+        {
+            return await _base.GetAll(p => p.ChatId == ChatId);
+        }
+       /* public async Task<List<Message>> GetAllByPrivateChatId(Guid PrivateChatId)
         {
             return await _base.GetAll(p => p.PrivateChatId == PrivateChatId);
         }
         public async Task<List<Message>> GetAllByGroupChatId(Guid GroupChatId)
         {
             return await _base.GetAll(p => p.GroupChatId == GroupChatId);
-        }
+        }*/
         public async Task<SimpleResponseDTO> Create(CreateMessageDTO model)
         {
             var message = _mapper.Map<Message>(model);

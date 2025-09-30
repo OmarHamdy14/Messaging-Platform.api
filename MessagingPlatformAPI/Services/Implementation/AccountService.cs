@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using MessagingPlatformAPI.Helpers.DTOs.AccountDTOs;
+using MessagingPlatformAPI.Helpers.JWTconfig;
 using MessagingPlatformAPI.Models;
 using MessagingPlatformAPI.Services.Interface;
 using Microsoft.AspNetCore.Identity;
@@ -32,7 +34,7 @@ namespace MessagingPlatformAPI.Services.Implementation
         }
         public async Task<List<ApplicationUser>> GetAllUsers()
         {
-            return await _userManager.Users.ToListAsync();
+            return _userManager.Users.ToList();
         }
         public async Task<AuthModel> Register(RegisterationDTO model)
         {

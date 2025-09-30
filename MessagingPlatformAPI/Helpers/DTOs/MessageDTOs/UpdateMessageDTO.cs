@@ -3,6 +3,5 @@
     public class UpdateMessageDTO
     {
         public string Content { get; set; }
-        public DateTime CreatedDate { get; set; }
     }
 }

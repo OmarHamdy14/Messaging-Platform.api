@@ -1,4 +1,5 @@
-﻿using MessagingPlatformAPI.Models;
+﻿using MessagingPlatformAPI.Helpers.DTOs.AccountDTOs;
+using MessagingPlatformAPI.Models;
 using Microsoft.AspNetCore.Identity;
 
 namespace MessagingPlatformAPI.Services.Interface
