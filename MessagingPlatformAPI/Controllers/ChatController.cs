@@ -15,34 +15,64 @@ namespace MessagingPlatformAPI.Controllers
         {
             _chatService = chatService;
         }
-        [HttpGet]
+        [HttpGet("GetById/{Id}")]
         public async Task<IActionResult> GetById(Guid Id)
         {
-            var chat = await _chatService.GetById(Id);
-            return Ok(chat);
+            if (string.IsNullOrEmpty(Id.ToString())) return BadRequest(new { Message = "Chat-Id is not found" });
+            try
+            {
+                var chat = await _chatService.GetById(Id);
+                return Ok(chat);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "Something went wrong." });
+            }
         }
-        [HttpPost]
-        public async Task<IActionResult> Create(CerateChatDTO model)
+        [HttpPost("Create")]
+        public async Task<IActionResult> Create([FromBody]CerateChatDTO model)
         {
-            if(!ModelState.IsValid) return BadRequest(ModelState);
-            var res = await _chatService.Create(model);
-            if (res.IsSuccess) return Ok(new { Message = res.Message });
-            else return BadRequest(new { Message = res.Message });
+            if(!ModelState.IsValid) return BadRequest(ModelState);           
+            try
+            {
+                var res = await _chatService.Create(model);
+                if (res.IsSuccess) return Ok(new { Message = res.Message });
+                else return BadRequest(new { Message = res.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "Something went wrong." });
+            }
         }
-        [HttpPut]
-        public async Task<IActionResult> Update(Guid ChaId, UpdateChatDTO model)
+        [HttpPut("Update/{Id}")]
+        public async Task<IActionResult> Update(Guid ChaId, [FromBody]UpdateChatDTO model)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
-            var res = await _chatService.Update(ChaId, model);
-            if (res.IsSuccess) return Ok(new { Message = res.Message });
-            else return BadRequest(new { Message = res.Message });
+            try
+            {
+                var res = await _chatService.Update(ChaId, model);
+                if (res.IsSuccess) return Ok(new { Message = res.Message });
+                else return BadRequest(new { Message = res.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "Something went wrong." });
+            }
         }
-        [HttpDelete]
+        [HttpDelete("Delete/{ChaId}")]
         public async Task<IActionResult> Delete(Guid ChaId)
         {
-            var res = await _chatService.Delete(ChaId);
-            if (res.IsSuccess) return Ok(new { Message = res.Message });
-            else return BadRequest(new { Message = res.Message });
+            if (string.IsNullOrEmpty(ChaId.ToString())) return BadRequest(new {Message = "Chat-Id is not found"});
+            try
+            {
+                var res = await _chatService.Delete(ChaId);
+                if (res.IsSuccess) return Ok(new { Message = res.Message });
+                else return BadRequest(new { Message = res.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "Something went wrong." });
+            }
         }
     }
 }
