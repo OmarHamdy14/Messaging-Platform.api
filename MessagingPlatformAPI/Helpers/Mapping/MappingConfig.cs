@@ -1,9 +1,8 @@
 ﻿using AutoMapper;
 using MessagingPlatformAPI.Helpers.DTOs.AccountDTOs;
-using MessagingPlatformAPI.Helpers.DTOs.GroupChatDTO;
+using MessagingPlatformAPI.Helpers.DTOs.ChatDTOs;
 using MessagingPlatformAPI.Helpers.DTOs.MessageDTOs;
 using MessagingPlatformAPI.Models;
-
 namespace MessagingPlatformAPI.Helpers.Mapping
 {
     public class MappingConfig : Profile
@@ -13,11 +12,11 @@ namespace MessagingPlatformAPI.Helpers.Mapping
             CreateMap<ApplicationUser, RegisterationDTO>().ReverseMap();
             CreateMap<ApplicationUser, UpdateUserDTO>().ReverseMap();
 
-            CreateMap<GroupChat, CerateGroupChatDTO>().ReverseMap();
-            CreateMap<GroupChat, UpdateGroupChatDTO>().ReverseMap();
-
             CreateMap<Message, CreateMessageDTO>().ReverseMap();
             CreateMap<Message, UpdateMessageDTO>().ReverseMap();
+
+            CreateMap<Chat, CerateChatDTO>().ReverseMap();
+            CreateMap<Chat, UpdateChatDTO>().ReverseMap();
         }
     }
 }

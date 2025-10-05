@@ -1,7 +1,6 @@
-﻿using MessagingPlatformAPI.Models.UnNeeded;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 
-namespace MessagingPlatformAPI.Models
+namespace MessagingPlatformAPI.Models.UnNeeded
 {
     public class PrivateChat
     {

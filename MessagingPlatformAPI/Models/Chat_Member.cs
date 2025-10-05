@@ -8,6 +8,6 @@
         public ApplicationUser Member { get; set; }
 
         public Guid ChatId { get; set; }
-        public Chat GroupChat { get; set; }
+        public Chat Chat { get; set; }
     }
 }

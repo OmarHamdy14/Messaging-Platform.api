@@ -1,5 +1,4 @@
-﻿using MessagingPlatformAPI.Models.UnNeeded;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace MessagingPlatformAPI.Models

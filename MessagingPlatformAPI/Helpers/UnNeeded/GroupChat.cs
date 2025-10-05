@@ -1,6 +1,4 @@
-﻿using MessagingPlatformAPI.Models.UnNeeded;
-
-namespace MessagingPlatformAPI.Models
+﻿namespace MessagingPlatformAPI.Models.UnNeeded
 {
     public class GroupChat
     {

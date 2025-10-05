@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using MessagingPlatformAPI.Base.Interface;
 using MessagingPlatformAPI.Helpers.DTOs.ChatDTOs;
-using MessagingPlatformAPI.Helpers.DTOs.GroupChatDTO;
 using MessagingPlatformAPI.Helpers.DTOs.ResponsesDTOs;
 using MessagingPlatformAPI.Models;
 using MessagingPlatformAPI.Services.Interface;
@@ -21,7 +20,6 @@ namespace MessagingPlatformAPI.Services.Implementation
         {
             return await _base.Get(c => c.Id == Id, "Messages,Members");
         }
-        //public async Task<List<GroupChat>> GetAllByUserId(){}
         public async Task<SimpleResponseDTO> Create(CerateChatDTO model)
         {
             var chat = _mapper.Map<Chat>(model);

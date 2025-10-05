@@ -4,9 +4,8 @@ using MessagingPlatformAPI.Helpers.DTOs.GroupChatDTO;
 using MessagingPlatformAPI.Helpers.DTOs.PrivateChatDTOs;
 using MessagingPlatformAPI.Helpers.DTOs.ResponsesDTOs;
 using MessagingPlatformAPI.Models;
-using MessagingPlatformAPI.Services.Interface;
 
-namespace MessagingPlatformAPI.Services.Implementation
+namespace MessagingPlatformAPI.Helpers.UnNeeded
 {
     public class PrivateChatService : IPrivateChatService
     {

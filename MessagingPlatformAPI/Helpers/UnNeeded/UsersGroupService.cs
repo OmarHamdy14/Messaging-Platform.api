@@ -2,9 +2,8 @@
 using MessagingPlatformAPI.Helpers.DTOs.ResponsesDTOs;
 using MessagingPlatformAPI.Helpers.DTOs.UsersGroupDTOs;
 using MessagingPlatformAPI.Models;
-using MessagingPlatformAPI.Services.Interface;
 
-namespace MessagingPlatformAPI.Services.Implementation
+namespace MessagingPlatformAPI.Helpers.UnNeeded
 {
     public class UsersGroupService : IUsersGroupService
     {
@@ -34,8 +33,8 @@ namespace MessagingPlatformAPI.Services.Implementation
         }
         public async Task<SimpleResponseDTO> RemoveUserFromGroup(RemoveUserFromGroupDTO model)
         {
-            var User_Group  = await _base.Get(g => g.MemberId == model.UserId && g.GroupChatId == model.ChatGroupId);
-            if(User_Group == null) return new SimpleResponseDTO() { IsSuccess = false, Message = "Recrd is not found" };
+            var User_Group = await _base.Get(g => g.MemberId == model.UserId && g.GroupChatId == model.ChatGroupId);
+            if (User_Group == null) return new SimpleResponseDTO() { IsSuccess = false, Message = "Recrd is not found" };
             await _base.Remove(User_Group);
             return new SimpleResponseDTO() { IsSuccess = true, Message = "Deletion is done" };
         }

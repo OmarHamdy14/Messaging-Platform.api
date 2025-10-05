@@ -47,7 +47,7 @@ namespace MessagingPlatformAPI.Controllers
                 var res = await _messageService.Create(model);
                 if (res.IsSuccess)
                 {
-                    await _chatHub.SendMessage(await _accountService.FindById(model.UserId), model.Content, model.ChatId);
+                    // await _chatHub.SendMessage(await _accountService.FindById(model.UserId), model.Content, model.ChatId);
                     return Ok(new { Message = res.Message });
                 }
                 else return BadRequest(new { Message = res.Message });

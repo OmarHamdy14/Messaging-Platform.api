@@ -2,7 +2,7 @@
 using MessagingPlatformAPI.Helpers.DTOs.ResponsesDTOs;
 using MessagingPlatformAPI.Models;
 
-namespace MessagingPlatformAPI.Services.Interface
+namespace MessagingPlatformAPI.Helpers.UnNeeded
 {
     public interface IPrivateChatService
     {

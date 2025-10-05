@@ -24,7 +24,6 @@ namespace MessagingPlatformAPI.Controllers
             {
                 var user = await _accountService.FindById(userId);
                 if (user is null) return NotFound();
-
                 return Ok(user);
             }
             catch (Exception ex)
