@@ -31,7 +31,9 @@ namespace MessagingPlatformAPI
             builder.Services.AddScoped<IChatService, ChatService>();
             builder.Services.AddScoped<IMessageService, MessageService>();
 
-
+            builder.Logging.ClearProviders();
+            builder.Logging.AddConsole();
+            builder.Logging.AddDebug();
 
             builder.Services.Configure<JWT>(builder.Configuration.GetSection("JWT"));
             builder.Services.AddAutoMapper(typeof(Program));

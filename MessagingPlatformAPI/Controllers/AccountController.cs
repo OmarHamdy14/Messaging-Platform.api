@@ -11,9 +11,11 @@ namespace MessagingPlatformAPI.Controllers
     public class AccountController : ControllerBase
     {
         private readonly IAccountService _accountService;
-        public AccountController(IAccountService accountService)
+        private readonly ILogger<AccountController> _logger;
+        public AccountController(IAccountService accountService, ILogger<AccountController> logger)
         {
             _accountService = accountService;
+            _logger = logger;
         }
         [Authorize]
         [HttpGet("FindById/{userId}")]
@@ -24,6 +26,7 @@ namespace MessagingPlatformAPI.Controllers
             {
                 var user = await _accountService.FindById(userId);
                 if (user is null) return NotFound();
+                _logger.LogDebug("Retreiving {fname} {lname} is done", user.FirstName, user.LastName);
                 return Ok(user);
             }
             catch (Exception ex)
@@ -40,7 +43,7 @@ namespace MessagingPlatformAPI.Controllers
             {
                 var user = await _accountService.FindByUserName(name);
                 if (user is null) return NotFound();
-
+                _logger.LogDebug("Retreiving {fname} {lname} is done", user.FirstName, user.LastName);
                 return Ok(user);
             }
             catch (Exception ex)
@@ -56,7 +59,7 @@ namespace MessagingPlatformAPI.Controllers
             {
                 var users = await _accountService.GetAllUsers();
                 if (!users.Any()) return NotFound();
-
+                _logger.LogDebug("Retreving users is done");
                 return Ok(users);
             }
             catch (Exception ex)
@@ -72,6 +75,7 @@ namespace MessagingPlatformAPI.Controllers
             {
                 var authModel = await _accountService.Register(model);
                 if (!authModel.IsAuthenticated) return BadRequest(authModel);
+                _logger.LogInformation("{FName} {lName} registered successfully", model.FirstName, model.LastName);
                 return Ok(authModel);
             }
             catch (Exception ex)
@@ -87,6 +91,8 @@ namespace MessagingPlatformAPI.Controllers
             {
                 var authModel = await _accountService.GetTokenAsync(model);
                 if (!authModel.IsAuthenticated) return BadRequest(authModel);
+                var user = await _accountService.FindByEmail(model.Email);
+                _logger.LogInformation("{FName} {lName} login successfully", user.FirstName, user.LastName);
                 return Ok(authModel);
             }
             catch (Exception ex)
@@ -102,10 +108,18 @@ namespace MessagingPlatformAPI.Controllers
             try
             {
                 var user = await _accountService.FindById(userId);
-                if (user is null) return NotFound();
+                if (user is null)
+                {
+                    _logger.LogWarning("This {UserId} is not found", userId);
+                    return NotFound();
+                }
 
                 var result = await _accountService.Update(user, model);
-                if (result.Succeeded) return Ok(new { Message = "Update is succeeded." });
+                if (result.Succeeded)
+                {
+                    _logger.LogInformation("{FName} {lName} is updated successfully", user.FirstName, user.LastName);
+                    return Ok(new { Message = "Update is succeeded." });
+                }
                 return BadRequest(result.Errors);
             }
             catch (Exception ex)
@@ -121,10 +135,18 @@ namespace MessagingPlatformAPI.Controllers
             try
             {
                 var user = await _accountService.FindById(userId);
-                if (user is null) return NotFound();
+                if (user is null)
+                {
+                    _logger.LogWarning("This {UserId} is not found", userId);
+                    return NotFound();
+                }
 
                 var result = await _accountService.ChangePassword(user, model);
-                if (result) return Ok(new { Message = "Changing Password is done successfully." });
+                if (result)
+                {
+                    _logger.LogInformation("{FName} {lName}'password is updated successfully", user.FirstName, user.LastName);
+                    return Ok(new { Message = "Changing Password is done successfully." });
+                }
                 return Ok(new { Message = "Changing Password is not done." });
             }
             catch (Exception ex)
