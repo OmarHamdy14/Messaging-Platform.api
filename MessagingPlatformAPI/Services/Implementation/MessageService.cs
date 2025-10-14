@@ -12,14 +12,16 @@ namespace MessagingPlatformAPI.Services.Implementation
     {
         private readonly IEntityBaseRepository<Message> _base;
         private readonly IChatService _chatService;
+        private readonly IAccountService _accountService;
         private readonly IHubContext _hubContext;
         private readonly IMapper _mapper;
-        public MessageService(IEntityBaseRepository<Message> @base, IMapper mapper, IChatService chatService, IHubContext hubContext)
+        public MessageService(IEntityBaseRepository<Message> @base, IMapper mapper, IChatService chatService, IHubContext hubContext, IAccountService accountService)
         {
             _base = @base;
             _mapper = mapper;
             _chatService = chatService;
             _hubContext = hubContext;
+            _accountService = accountService;
         }
         public async Task<List<Message>> GetAllByChatId(Guid ChatId)
         {
@@ -36,6 +38,17 @@ namespace MessagingPlatformAPI.Services.Implementation
         public async Task<SimpleResponseDTO> Create(CreateMessageDTO model)
         {
             var message = _mapper.Map<Message>(model);
+            var chat = await _chatService.GetById(model.ChatId);
+            var allMembers = chat.Members.Select(c => c.MemberId != model.UserId); // all except sender
+            foreach (var cm in allMembers)
+            {
+                message.messageStatuses.Add(new Models.MessageStatus()
+                {
+                    MessageId = message.Id,
+                    status = Helpers.Enums.MessageStatusEnum.sent,
+                    UpdatedAt = DateTime.Now
+                });
+            }
             await _base.Create(message);
             return new SimpleResponseDTO() { IsSuccess = true, Message = "Message creation is done" };
         }

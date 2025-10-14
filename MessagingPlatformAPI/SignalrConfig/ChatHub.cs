@@ -29,6 +29,7 @@ namespace MessagingPlatformAPI.SignalrConfig
         public override async Task OnConnectedAsync()
         {
             var UserId = Context.UserIdentifier;
+            var user = await _accountService.FindById(UserId);
             var groups = await _chatMembersService.GetAllByUserId(UserId);
             foreach (var group in groups)
             {

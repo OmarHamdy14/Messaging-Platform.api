@@ -11,18 +11,22 @@ namespace MessagingPlatformAPI.Controllers
     public class ChatController : ControllerBase
     {
         private readonly IChatService _chatService;
+        private readonly IMessageService _messageService;
+        private readonly IAccountService _accountService;
         private readonly ILogger<ChatController> _logger;
-        public ChatController(IChatService chatService, ILogger<ChatController> logger)
+        public ChatController(IChatService chatService, ILogger<ChatController> logger, IMessageService messageService, IAccountService accountService)
         {
             _chatService = chatService;
             _logger = logger;
+            _messageService = messageService;
+            _accountService = accountService;
         }
         [HttpGet("GetById/{Id}")]
         public async Task<IActionResult> GetById(Guid Id)
         {
             if (string.IsNullOrEmpty(Id.ToString()))
             {
-                _logger.LogWarning ("This id '{Id}' is wrong", Id);
+                _logger.LogWarning("This id '{Id}' is wrong", Id);
                 return BadRequest(new { Message = "Chat-Id is not found" });
             }
             try
@@ -37,7 +41,7 @@ namespace MessagingPlatformAPI.Controllers
             }
         }
         [HttpPost("Create")]
-        public async Task<IActionResult> Create([FromBody]CerateChatDTO model)
+        public async Task<IActionResult> Create([FromBody] CerateChatDTO model)
         {
             if (!ModelState.IsValid)
             {
@@ -64,7 +68,7 @@ namespace MessagingPlatformAPI.Controllers
             }
         }
         [HttpPut("Update/{Id}")]
-        public async Task<IActionResult> Update(Guid ChaId, [FromBody]UpdateChatDTO model)
+        public async Task<IActionResult> Update(Guid ChaId, [FromBody] UpdateChatDTO model)
         {
             if (!ModelState.IsValid)
             {
@@ -111,6 +115,40 @@ namespace MessagingPlatformAPI.Controllers
                     _logger.LogInformation("Delete Chat with Id '{Id}' is not succedded; {problem}", ChaId, res.Message);
                     return BadRequest(new { Message = res.Message });
                 }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "Something went wrong." });
+            }
+        }
+
+
+
+        [HttpPut("Seen")]         // put or post
+        public async Task<IActionResult> Seen(Guid ChatId, string RecieverId)
+        {
+            if (string.IsNullOrEmpty(ChatId.ToString()))
+            {
+                _logger.LogWarning("This Id '{Id}' is wrong", ChatId);
+                return BadRequest(new { Message = "Chat-Id is not found" });
+            }
+            try
+            {
+                var AllMsgs = await _messageService.GetAllByChatId(ChatId);
+                var reciever = await _accountService.FindById(RecieverId);
+                var UnSeenMsgs = AllMsgs.Where(m => m.CreatedDate > reciever.LastSeen);
+                foreach (var msg in UnSeenMsgs)
+                {
+                    msg.messageStatuses.Add(new Models.MessageStatus()
+                    {
+                        MessageId = msg.Id,
+                        RecieverId = RecieverId,
+                        status = Helpers.Enums.MessageStatusEnum.seen,
+                        UpdatedAt = DateTime.Now
+                    }
+                    );
+                }
+                return Ok();
             }
             catch (Exception ex)
             {

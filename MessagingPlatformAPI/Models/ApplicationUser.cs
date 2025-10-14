@@ -7,6 +7,9 @@ namespace MessagingPlatformAPI.Models
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
+
+        public DateTime LastSeen { get; set; }
+        
         public string Bio { get; set; }
         public ICollection<Chat_Member> Chats { get; set; }  // ??????
         public ICollection<Message> Messages { get; set; }
