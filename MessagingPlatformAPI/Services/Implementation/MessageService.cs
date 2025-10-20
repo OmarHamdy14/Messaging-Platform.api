@@ -2,6 +2,7 @@
 using MessagingPlatformAPI.Base.Interface;
 using MessagingPlatformAPI.Helpers.DTOs.MessageDTOs;
 using MessagingPlatformAPI.Helpers.DTOs.ResponsesDTOs;
+using MessagingPlatformAPI.Helpers.Enums;
 using MessagingPlatformAPI.Models;
 using MessagingPlatformAPI.Services.Interface;
 using Microsoft.AspNetCore.SignalR;
@@ -39,13 +40,15 @@ namespace MessagingPlatformAPI.Services.Implementation
         {
             var message = _mapper.Map<Message>(model);
             var chat = await _chatService.GetById(model.ChatId);
-            var allMembers = chat.Members.Select(c => c.MemberId != model.UserId); // all except sender
+            var allMembers = chat.Members.Where(c => c.MemberId != model.UserId); // all except sender
             foreach (var cm in allMembers)
             {
+                var reciever = await _accountService.FindById(cm.MemberId);
                 message.messageStatuses.Add(new Models.MessageStatus()
                 {
                     MessageId = message.Id,
-                    status = Helpers.Enums.MessageStatusEnum.sent,
+                    RecieverId = cm.MemberId,
+                    status = reciever.IsOnline ? Helpers.Enums.MessageStatusEnum.delivered : Helpers.Enums.MessageStatusEnum.sent,
                     UpdatedAt = DateTime.Now
                 });
             }

@@ -8,13 +8,15 @@ namespace MessagingPlatformAPI.SignalrConfig
     public class ChatHub : Hub<IChatMethod>, IChatHub
     {
         private readonly IAccountService _accountService;
+        private readonly IUserConnectionService _userConnectionService;
         private readonly IChatMembersService _chatMembersService;
         private readonly ILogger<ChatHub> _logger;
-        public ChatHub(IAccountService accountService, IChatMembersService chatMembersService, ILogger<ChatHub> logger)
+        public ChatHub(IAccountService accountService, IChatMembersService chatMembersService, ILogger<ChatHub> logger, IUserConnectionService userConnectionService)
         {
             _accountService = accountService;
             _chatMembersService = chatMembersService;
             _logger = logger;
+            _userConnectionService = userConnectionService;
         }
         public async Task SendMessage(ApplicationUser user, string msg, Guid GroupId)
         {
@@ -30,6 +32,11 @@ namespace MessagingPlatformAPI.SignalrConfig
         {
             var UserId = Context.UserIdentifier;
             var user = await _accountService.FindById(UserId);
+            user.IsOnline = true;
+            await _accountService.SaveChangesAsync(user);
+
+            await _userConnectionService.Create(Context.ConnectionId);
+
             var groups = await _chatMembersService.GetAllByUserId(UserId);
             foreach (var group in groups)
             {
@@ -37,9 +44,20 @@ namespace MessagingPlatformAPI.SignalrConfig
             }
             await base.OnConnectedAsync();
         }
-        public override Task OnDisconnectedAsync(Exception? exception)
+        public override async Task OnDisconnectedAsync(Exception? exception)
         {
-            return base.OnDisconnectedAsync(exception);
+            await _userConnectionService.Delete(Context.ConnectionId);
+
+            var UserId = Context.UserIdentifier;
+            var user = await _accountService.FindById(UserId);
+            if (!user.UserConnections.Any())  // if the user dont open the app in another device
+            {
+                user.IsOnline = false;
+                user.LastSeen = DateTime.UtcNow;
+                await _accountService.SaveChangesAsync(user);
+            }
+            // if user open the app in another device, he is still online
+            await base.OnDisconnectedAsync(exception);
         }
     }
 }

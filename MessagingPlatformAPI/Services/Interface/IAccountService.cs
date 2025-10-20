@@ -14,5 +14,6 @@ namespace MessagingPlatformAPI.Services.Interface
         Task<AuthModel> GetTokenAsync(LogInDTO model);
         Task<IdentityResult> Update(ApplicationUser user, UpdateUserDTO model);
         Task<bool> ChangePassword(ApplicationUser user, ChangePasswordDTO model);
+        Task SaveChangesAsync(ApplicationUser user);
     }
 }

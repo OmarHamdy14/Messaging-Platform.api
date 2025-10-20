@@ -1,0 +1,80 @@
+﻿1. Presence & Status
+
+Online --- done
+Offline --- done
+Last Seen --- done
+Typing Indicator
+Recording Indicator
+Read Receipts
+Delivery Status --- done
+Message Reactions
+User Status Message
+Do Not Disturb Mode
+
+2. Messaging Metadata
+
+SentAt --- done
+DeliveredAt --- done
+SeenAt --- done
+EditedAt
+IsEdited
+DeletedAt
+IsDeleted --- done
+ReplyToMessageId
+Reactions
+Attachments
+ForwardedFrom
+IsForwarded
+PinnedMessageId
+
+3. User Profile Info
+
+DisplayName
+ProfilePictureUrl
+About
+PhoneNumber
+Email
+IsVerified
+IsBlocked
+BlockedUsers
+
+4. Group Chat & Membership
+
+GroupName  --- done
+GroupPictureUrl
+CreatedAt --- done
+CreatedBy
+Admins
+Members
+InviteLink
+IsMuted
+MuteUntil
+PinnedMessages
+
+5. Notification & Device
+
+DeviceId
+Platform
+PushToken
+IsActiveSession
+LastSyncTime
+
+6. Security & Privacy
+PublicKey
+PrivateKey
+IsTwoFactorEnabled
+BlockedContacts
+LastSeenPrivacy
+ReadReceiptsEnabled
+EncryptedMessages
+
+Analytics & Moderation
+
+MessageCount
+MediaCount
+ReportCount
+IsSuspended
+IsBanned
+LoginHistory
+
+7. Caching

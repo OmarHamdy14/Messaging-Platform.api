@@ -100,5 +100,9 @@ namespace MessagingPlatformAPI.Services.Implementation
             return false;
 
         }
+        public async Task SaveChangesAsync(ApplicationUser user)
+        {
+            await _userManager.UpdateAsync(user);
+        }
     }
 }
