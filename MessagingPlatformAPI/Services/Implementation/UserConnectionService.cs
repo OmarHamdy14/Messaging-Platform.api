@@ -2,6 +2,7 @@
 using MessagingPlatformAPI.Base.Interface;
 using MessagingPlatformAPI.Helpers.DTOs.ChatDTOs;
 using MessagingPlatformAPI.Helpers.DTOs.ResponsesDTOs;
+using MessagingPlatformAPI.Helpers.DTOs.UserConnectionDTOs;
 using MessagingPlatformAPI.Models;
 using MessagingPlatformAPI.Services.Interface;
 
@@ -20,9 +21,13 @@ namespace MessagingPlatformAPI.Services.Implementation
         {
             return await _base.Get(c => c.ConnectionId == ConnectionId);
         }
-        public async Task<SimpleResponseDTO> Create(string connectionId)
+        public async Task<List<UserConnection>> GetAllByUserId(string UserId)
         {
-            var userConn = new UserConnection() { ConnectionId = connectionId };
+            return await _base.GetAll(u => u.UserId == UserId);
+        }
+        public async Task<SimpleResponseDTO> Create(CreateUserConnectionDTO model)
+        {
+            var userConn = _mapper.Map<UserConnection>(model);
             await _base.Create(userConn);
             return new SimpleResponseDTO() { IsSuccess = true, Message = "user Connection creation is done" };
         }

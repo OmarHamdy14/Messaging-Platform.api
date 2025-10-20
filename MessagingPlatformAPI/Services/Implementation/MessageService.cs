@@ -60,6 +60,8 @@ namespace MessagingPlatformAPI.Services.Implementation
             var message = await _base.Get(c => c.Id == MessageId);
             if (message == null) return new SimpleResponseDTO() { IsSuccess = false, Message = "Message is not found" };
             _mapper.Map(message, model);
+            message.EditedAt = DateTime.UtcNow;
+            message.IsEdited = true;
             await _base.Update(message);
             return new SimpleResponseDTO() { IsSuccess = true, Message = "Message Update is done" };
         }
@@ -67,6 +69,7 @@ namespace MessagingPlatformAPI.Services.Implementation
         {
             var message = await _base.Get(c => c.Id == MessageId);
             if (message == null) return new SimpleResponseDTO() { IsSuccess = false, Message = "Message is not found" };
+            message.DeletedAt = DateTime.UtcNow;
             message.IsDeleted = true;
             await _base.Update(message);
             return new SimpleResponseDTO() { IsSuccess = true, Message = "Message deletion is done" };

@@ -16,9 +16,9 @@ Do Not Disturb Mode
 SentAt --- done
 DeliveredAt --- done
 SeenAt --- done
-EditedAt
-IsEdited
-DeletedAt
+EditedAt --- done
+IsEdited --- done
+DeletedAt --- done
 IsDeleted --- done
 ReplyToMessageId
 Reactions

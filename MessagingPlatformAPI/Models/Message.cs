@@ -7,8 +7,14 @@ namespace MessagingPlatformAPI.Models
         public Guid Id { get; set; }
         public string Content { get; set; }
         public DateTime CreatedDate { get; set; }
+
+        public DateTime? DeletedAt { get; set; } 
         [DefaultValue(false)]
         public bool IsDeleted { get; set; }
+
+        public DateTime? EditedAt { get; set; }
+        [DefaultValue(false)]
+        public bool IsEdited { get; set; }
 
         public string UserId { get; set; }
         public ApplicationUser User { get; set; }
