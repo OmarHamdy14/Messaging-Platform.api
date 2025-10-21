@@ -27,9 +27,15 @@ namespace MessagingPlatformAPI
 
             builder.Services.AddScoped<IEntityBaseRepository<Chat>, EntityBaseRepository<Chat>>();
             builder.Services.AddScoped<IEntityBaseRepository<Message>, EntityBaseRepository<Message>>();
+            builder.Services.AddScoped<IEntityBaseRepository<Reaction>, EntityBaseRepository<Reaction>>();
+            builder.Services.AddScoped<IEntityBaseRepository<UserConnection>, EntityBaseRepository<UserConnection>>();
+            builder.Services.AddScoped<IEntityBaseRepository<Chat_Member>, EntityBaseRepository<Chat_Member>>();
+
             builder.Services.AddScoped<IAccountService, AccountService>();
             builder.Services.AddScoped<IChatService, ChatService>();
             builder.Services.AddScoped<IMessageService, MessageService>();
+            builder.Services.AddScoped<IUserConnectionService, UserConnectionService>();
+            builder.Services.AddScoped<IReactionService, ReactionService>();
 
             builder.Logging.ClearProviders();
             builder.Logging.AddConsole();

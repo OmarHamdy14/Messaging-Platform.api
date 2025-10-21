@@ -3,19 +3,18 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MessagingPlatformAPI.Models
 {
-    public class MessageStatus
+    public class Reaction
     {
         public Guid Id { get; set; }
+
+        public string ReacterId { get; set; }
+        [ForeignKey("ReacterId")]
+        public ApplicationUser Reacter { get; set; }
 
         public Guid MessageId { get; set; }
         [ForeignKey("MessageId")]
         public Message Message { get; set; }
 
-        public string RecieverId { get; set; }
-        [ForeignKey("RecieverId")]
-        public ApplicationUser Reciever { get; set; }
-
-        public MessageStatusEnum status { get; set; }
-        public DateTime UpdatedAt { get; set; }
+        public ReactionType Type { get; set; }
     }
 }

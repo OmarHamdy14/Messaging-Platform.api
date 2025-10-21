@@ -11,10 +11,17 @@ namespace MessagingPlatformAPI.Models
         public bool IsOnline { get; set; }
         public DateTime LastSeen { get; set; }
         
+        public bool IsVerified { get; set; }
         public string Bio { get; set; }
+
         public ICollection<Chat_Member> Chats { get; set; }  // ??????
+
         public ICollection<Message> Messages { get; set; }
+
         public ICollection<UserConnection> UserConnections { get; set; }
+
+        public ICollection<Reaction> reactions { get; set; }
+
         /*public ICollection<Users_Group> ChatsGroup { get; set; }
         public ICollection<Users_Private> ChatsPrivate { get; set; }*/
     }

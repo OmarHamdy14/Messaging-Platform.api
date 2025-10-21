@@ -19,5 +19,6 @@ namespace MessagingPlatformAPI.Models
         public DbSet<Chat_Member> Chat_Members { get; set; }
         public DbSet<MessageStatus> MessageStatuses { get; set; }
         public DbSet<UserConnection> UserConnectiones { get; set; }
+        public DbSet<Reaction> Reactions { get; set; }
     }
 }

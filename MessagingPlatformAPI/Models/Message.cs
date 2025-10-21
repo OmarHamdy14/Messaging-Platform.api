@@ -23,6 +23,10 @@ namespace MessagingPlatformAPI.Models
         public Chat Chat { get; set; } 
 
         public ICollection<MessageStatus> messageStatuses { get; set; }
+
+        public ICollection<Reaction> reactions { get; set; }
+
+
         /*
         public Guid? PrivateChatId { get; set; }
         public PrivateChat PrivateChat { get; set; } // should it be nullable ??
