@@ -6,6 +6,7 @@ namespace MessagingPlatformAPI.Services.Interface
 {
     public interface IMessageService
     {
+        Task<Message> GetById(Guid MessageId);
         Task<List<Message>> GetAllByChatId(Guid ChatId);
         /*Task<List<Message>> GetAllByPrivateChatId(Guid PrivateChatId);
         Task<List<Message>> GetAllByGroupChatId(Guid GroupChatId);*/

@@ -1,16 +1,20 @@
 ﻿1. Presence & Status
-Online --- done
-Offline --- done
-Last Seen --- done
+User Status Message
+Do Not Disturb Mode
 Typing Indicator
 Recording Indicator
 Read Receipts
+Online --- done
+Offline --- done
+Last Seen --- done
 Delivery Status --- done
 Message Reactions --- done
-User Status Message
-Do Not Disturb Mode
 
 2. Messaging Metadata
+Attachments
+ForwardedFrom --- X
+PinnedMessageId --- done (check solution)
+IsForwarded --- done
 SentAt --- done
 DeliveredAt --- done
 SeenAt --- done
@@ -18,34 +22,30 @@ EditedAt --- done
 IsEdited --- done
 DeletedAt --- done
 IsDeleted --- done
-ReplyToMessageId --- X
+ReplyToMessageId --- done (check solution)
 Reactions --- done
-Attachments
-ForwardedFrom --- X
-IsForwarded --- X
-PinnedMessageId --- X
 
 3. User Profile Info
 DisplayName
 ProfilePictureUrl
+IsBlocked 
+BlockedUsers
 About --- done
 PhoneNumber --- done
 Email --- done
 IsVerified --- done
-IsBlocked 
-BlockedUsers
 
 4. Group Chat & Membership
-GroupName  --- done
-GroupPictureUrl
-CreatedAt --- done
-CreatedBy ---
-Admins ---
-Members ---
 InviteLink
-IsMuted ---
 MuteUntil
-PinnedMessages
+GroupPictureUrl
+PinnedMessages --- done (check solution)
+IsMuted --- done (check solution)
+GroupName  --- done
+CreatedAt --- done
+CreatedBy --- done (check solution)
+Admins --- done (check solution)
+Members --- done
 
 5. Notification & Device
 DeviceId

@@ -24,6 +24,10 @@ namespace MessagingPlatformAPI.Services.Implementation
             _hubContext = hubContext;
             _accountService = accountService;
         }
+        public async Task<Message> GetById(Guid MessageId)
+        {
+            return await _base.Get(m => m.Id == MessageId); 
+        }
         public async Task<List<Message>> GetAllByChatId(Guid ChatId)
         {
             return await _base.GetAll(p => p.ChatId == ChatId);

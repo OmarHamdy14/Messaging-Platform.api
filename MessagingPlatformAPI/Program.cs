@@ -36,7 +36,8 @@ namespace MessagingPlatformAPI
             builder.Services.AddScoped<IMessageService, MessageService>();
             builder.Services.AddScoped<IUserConnectionService, UserConnectionService>();
             builder.Services.AddScoped<IReactionService, ReactionService>();
-
+            builder.Services.AddScoped<IChatMembersService, ChatMembersService>();
+            
             builder.Logging.ClearProviders();
             builder.Logging.AddConsole();
             builder.Logging.AddDebug();

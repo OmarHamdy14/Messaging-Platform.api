@@ -54,5 +54,11 @@ namespace MessagingPlatformAPI.Services.Implementation
             await _base.Remove(chat);
             return new SimpleResponseDTO() { IsSuccess = true, Message = "Chat deletion is done" };
         }
+
+
+        public async Task SaveChanges(Chat c)
+        {
+            await _base.Update(c);
+        }
     }
 }

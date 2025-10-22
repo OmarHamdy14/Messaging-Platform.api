@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MessagingPlatformAPI.Models
 {
@@ -7,6 +8,8 @@ namespace MessagingPlatformAPI.Models
         public Guid Id { get; set; }
         public string Content { get; set; }
         public DateTime CreatedDate { get; set; }
+
+        public bool IsForward { get; set; }
 
         public DateTime? DeletedAt { get; set; } 
         [DefaultValue(false)]
@@ -21,6 +24,10 @@ namespace MessagingPlatformAPI.Models
 
         public Guid ChatId { get; set; }
         public Chat Chat { get; set; } 
+
+        public Guid ReplayToMessageId { get; set; }
+        [ForeignKey("ReplayToMessageId")]
+        public Message ReplayToMessage { get; set; }
 
         public ICollection<MessageStatus> messageStatuses { get; set; }
 

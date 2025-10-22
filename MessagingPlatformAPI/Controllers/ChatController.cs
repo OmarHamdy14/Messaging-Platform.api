@@ -1,5 +1,6 @@
 ﻿using MessagingPlatformAPI.Helpers.DTOs.ChatDTOs;
 using MessagingPlatformAPI.Helpers.DTOs.ResponsesDTOs;
+using MessagingPlatformAPI.Models;
 using MessagingPlatformAPI.Services.Interface;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -124,7 +125,7 @@ namespace MessagingPlatformAPI.Controllers
 
 
 
-        [HttpPut("Seen")]         // put or post
+        [HttpPut("Seen")]         // put or post ??
         public async Task<IActionResult> Seen(Guid ChatId, string RecieverId)
         {
             if (string.IsNullOrEmpty(ChatId.ToString()))
@@ -149,6 +150,31 @@ namespace MessagingPlatformAPI.Controllers
                     );
                 }
                 return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "Something went wrong." });
+            }
+        }
+
+
+
+        [HttpPut("PinMessage/{MessageId}/{ChatId}")]
+        public async Task<IActionResult> PinMessage(Guid MessageId, Guid ChatId)
+        {
+            if (string.IsNullOrEmpty(MessageId.ToString()) || string.IsNullOrEmpty(ChatId.ToString()))
+            {
+                //_logger.LogWarning("This Id '{Id}' is wrong", MessageId);
+                return BadRequest(new { Message = "Chat-Id or Message-Id is not wrong" });
+            }
+            try
+            {
+                var chat = await _chatService.GetById(ChatId);
+                if (chat == null) return NotFound(new { Message = "This chat record is not found" });
+                chat.PinnedMessageId = MessageId;
+                chat.PinnedMessage = await _messageService.GetById(MessageId);         // is this right , or there is no need for that and it is done automatic ???
+                await _chatService.SaveChanges(chat);
+                return Ok(new { Message=$"Pin this message in the chat with Id {ChatId} is done"});
             }
             catch (Exception ex)
             {

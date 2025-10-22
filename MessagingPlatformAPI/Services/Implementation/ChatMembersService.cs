@@ -1,7 +1,9 @@
 ﻿using MessagingPlatformAPI.Base.Interface;
+using MessagingPlatformAPI.Helpers.DTOs.ChatMemberDTOs;
 using MessagingPlatformAPI.Helpers.DTOs.ResponsesDTOs;
 using MessagingPlatformAPI.Models;
 using MessagingPlatformAPI.Services.Interface;
+using System.Diagnostics.Metrics;
 
 namespace MessagingPlatformAPI.Services.Implementation
 {
@@ -12,6 +14,14 @@ namespace MessagingPlatformAPI.Services.Implementation
         {
             _base = @base;
         }
+        public async Task<SimpleResponseDTO> MakeAdmin(RecordDTO model)
+        {
+            var member = await _base.Get(cm => cm.MemberId==model.MemberId && cm.ChatId == model.ChatId);
+            if(member == null) return new SimpleResponseDTO() { IsSuccess = false, Message = $"Failed !!! This record: MemberId={model.MemberId} & ChatId={model.ChatId} is not found"};
+            member.IsAdmin = true;
+            await _base.Update(member);
+            return new SimpleResponseDTO() { IsSuccess = true, Message = $"Succeeded !!! Making This record: MemberId={model.MemberId} & ChatId={model.ChatId} as a admin is done" };
+        }
         public async Task<List<Chat_Member>> GetAllByUserId(string UserId)
         {
             return await _base.GetAll(c => c.MemberId == UserId);
@@ -20,10 +30,11 @@ namespace MessagingPlatformAPI.Services.Implementation
         {
             return await _base.GetAll(c => c.ChatId == ChatId);
         }
-        public async Task<SimpleResponseDTO> Delete(string UserId, Guid ChatId)
+        public async Task<SimpleResponseDTO> Delete(RecordDTO model)
         {
-            var cm = await _base.Get(c => c.ChatId == ChatId && c.MemberId == UserId);
-            await _base.Remove(cm);
+            var member = await _base.Get(c => c.ChatId == model.ChatId && c.MemberId == model.MemberId);
+            if (member == null) return new SimpleResponseDTO() { IsSuccess = false, Message = $"Failed !!! This record: MemberId={model.MemberId} & ChatId={model.ChatId} is not found" };
+            await _base.Remove(member);
             return new SimpleResponseDTO() { IsSuccess = true, Message = "Deletion is succedded" };
         }
     }

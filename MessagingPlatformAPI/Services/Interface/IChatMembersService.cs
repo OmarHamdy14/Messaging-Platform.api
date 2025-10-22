@@ -1,4 +1,5 @@
-﻿using MessagingPlatformAPI.Helpers.DTOs.ResponsesDTOs;
+﻿using MessagingPlatformAPI.Helpers.DTOs.ChatMemberDTOs;
+using MessagingPlatformAPI.Helpers.DTOs.ResponsesDTOs;
 using MessagingPlatformAPI.Models;
 
 namespace MessagingPlatformAPI.Services.Interface
@@ -7,6 +8,7 @@ namespace MessagingPlatformAPI.Services.Interface
     {
         Task<List<Chat_Member>> GetAllByUserId(string UserId);
         Task<List<Chat_Member>> GetAllByChatId(Guid ChatId);
-        Task<SimpleResponseDTO> Delete(string UserId, Guid ChatId);
+        Task<SimpleResponseDTO> MakeAdmin(RecordDTO model);
+        Task<SimpleResponseDTO> Delete(RecordDTO model);
     }
 }

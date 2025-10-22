@@ -11,11 +11,13 @@ namespace MessagingPlatformAPI.Controllers
     public class AccountController : ControllerBase
     {
         private readonly IAccountService _accountService;
+        private readonly IChatMembersService _chatMembersService;
         private readonly ILogger<AccountController> _logger;
-        public AccountController(IAccountService accountService, ILogger<AccountController> logger)
+        public AccountController(IAccountService accountService, ILogger<AccountController> logger, IChatMembersService chatMembersService)
         {
             _accountService = accountService;
             _logger = logger;
+            _chatMembersService = chatMembersService;
         }
         [Authorize]
         [HttpGet("FindById/{userId}")]
