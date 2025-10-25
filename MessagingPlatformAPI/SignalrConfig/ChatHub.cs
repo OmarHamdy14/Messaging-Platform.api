@@ -1,4 +1,5 @@
-﻿using MessagingPlatformAPI.Models;
+﻿using MessagingPlatformAPI.Helpers.DTOs.UserConnectionDTOs;
+using MessagingPlatformAPI.Models;
 using MessagingPlatformAPI.Services.Implementation;
 using MessagingPlatformAPI.Services.Interface;
 using Microsoft.AspNetCore.SignalR;
@@ -35,12 +36,12 @@ namespace MessagingPlatformAPI.SignalrConfig
             user.IsOnline = true;
             await _accountService.SaveChangesAsync(user);
 
-            await _userConnectionService.Create(Context.ConnectionId);
+            await _userConnectionService.Create(new CreateUserConnectionDTO() { UserId = UserId ,ConnectionId = Context.ConnectionId });
 
             var groups = await _chatMembersService.GetAllByUserId(UserId);
             foreach (var group in groups)
             {
-                await Groups.AddToGroupAsync(Context.ConnectionId, group.Id.ToString());
+                await Groups.AddToGroupAsync(Context.ConnectionId, group.ChatId.ToString());
             }
             await base.OnConnectedAsync();
         }

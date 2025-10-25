@@ -20,5 +20,7 @@ namespace MessagingPlatformAPI.Models
         public DbSet<MessageStatus> MessageStatuses { get; set; }
         public DbSet<UserConnection> UserConnectiones { get; set; }
         public DbSet<Reaction> Reactions { get; set; }
+        public DbSet<MessageImage> MessageImages { get; set; }
+        public DbSet<ProfileImage> ProfileImages { get; set; }
     }
 }

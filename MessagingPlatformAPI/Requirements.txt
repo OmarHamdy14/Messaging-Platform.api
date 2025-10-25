@@ -3,7 +3,7 @@ User Status Message
 Do Not Disturb Mode
 Typing Indicator
 Recording Indicator
-Read Receipts
+Read Receipts --- done
 Online --- done
 Offline --- done
 Last Seen --- done
@@ -73,4 +73,6 @@ LoginHistory
 
 8. Caching
 
-9. Re-add to groups
+9. Re-add to groups --- done
+
+10. Private or Group Chat

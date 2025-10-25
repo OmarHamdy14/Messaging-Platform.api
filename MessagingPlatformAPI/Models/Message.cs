@@ -20,9 +20,11 @@ namespace MessagingPlatformAPI.Models
         public bool IsEdited { get; set; }
 
         public string UserId { get; set; }
+        [ForeignKey("UserId")]
         public ApplicationUser User { get; set; }
 
         public Guid ChatId { get; set; }
+        [ForeignKey("ChatId")]
         public Chat Chat { get; set; } 
 
         public Guid ReplayToMessageId { get; set; }
@@ -33,7 +35,7 @@ namespace MessagingPlatformAPI.Models
 
         public ICollection<Reaction> reactions { get; set; }
 
-
+        public ICollection<MessageImage> Images { get; set; }
         /*
         public Guid? PrivateChatId { get; set; }
         public PrivateChat PrivateChat { get; set; } // should it be nullable ??

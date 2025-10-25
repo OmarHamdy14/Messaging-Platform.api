@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MessagingPlatformAPI.Models
 {
@@ -13,6 +14,10 @@ namespace MessagingPlatformAPI.Models
         
         public bool IsVerified { get; set; }
         public string Bio { get; set; }
+
+        public Guid ProfileImageId { get; set; }
+        [ForeignKey("ProfileImageId")]
+        public ProfileImage ProfileImage { get; set; }
 
         public ICollection<Chat_Member> Chats { get; set; }  // ??????
 

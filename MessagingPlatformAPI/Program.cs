@@ -1,6 +1,7 @@
 using AutoMapper;
 using MessagingPlatformAPI.Base.Implementation;
 using MessagingPlatformAPI.Base.Interface;
+using MessagingPlatformAPI.CloudinaryConfigs;
 using MessagingPlatformAPI.Helpers.JWTconfig;
 using MessagingPlatformAPI.Models;
 using MessagingPlatformAPI.Services.Implementation;
@@ -37,12 +38,15 @@ namespace MessagingPlatformAPI
             builder.Services.AddScoped<IUserConnectionService, UserConnectionService>();
             builder.Services.AddScoped<IReactionService, ReactionService>();
             builder.Services.AddScoped<IChatMembersService, ChatMembersService>();
-            
+            builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
+            builder.Services.AddScoped<IMessageStatusService, MessageStatusService>();
+
             builder.Logging.ClearProviders();
             builder.Logging.AddConsole();
             builder.Logging.AddDebug();
 
             builder.Services.Configure<JWT>(builder.Configuration.GetSection("JWT"));
+            builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("Cloudinary"));
             builder.Services.AddAutoMapper(typeof(Program));
 
             builder.Services.AddAuthentication(options =>
