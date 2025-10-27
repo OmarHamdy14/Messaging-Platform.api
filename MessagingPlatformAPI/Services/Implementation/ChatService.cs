@@ -10,11 +10,15 @@ namespace MessagingPlatformAPI.Services.Implementation
     public class ChatService : IChatService
     {
         private readonly IEntityBaseRepository<Chat> _base;
+        private readonly IEntityBaseRepository<ChatImage> _chatPicBase;
+        private readonly ICloudinaryService _cloudinaryService;
         private readonly IMapper _mapper;
-        public ChatService(IEntityBaseRepository<Chat> @base, IMapper mapper)
+        public ChatService(IEntityBaseRepository<Chat> @base, IMapper mapper, IEntityBaseRepository<ChatImage> chatPicBase, ICloudinaryService cloudinaryService)
         {
             _base = @base;
             _mapper = mapper;
+            _chatPicBase = chatPicBase;
+            _cloudinaryService = cloudinaryService;
         }
         public async Task<Chat> GetById(Guid Id)
         {
@@ -59,6 +63,33 @@ namespace MessagingPlatformAPI.Services.Implementation
         public async Task SaveChanges(Chat c)
         {
             await _base.Update(c);
+        }
+        public async Task<SimpleResponseDTO> ChangeChatPic(Chat chat, IFormFile pic)
+        {
+            var currentPic = await _chatPicBase.Get(p => p.ChatId == chat.Id);
+            if (currentPic != null)
+            {
+                await _cloudinaryService.DeleteFile(currentPic.PublicId);
+                await _chatPicBase.Remove(currentPic);
+            }
+            var cloudinaryRes = await _cloudinaryService.UploadFile(pic);
+            if (cloudinaryRes.IsSuccess)
+            {
+                await _chatPicBase.Create(new ChatImage() { PublicId = cloudinaryRes.PublicId, Url = cloudinaryRes.Url, ChatId = chat.Id });
+                return new SimpleResponseDTO() { IsSuccess = true, Message = "Changing chat picture is done" };
+            }
+            return new SimpleResponseDTO() { IsSuccess = false };
+        }
+        public async Task<SimpleResponseDTO> DeleteChatPic(string ImagePublicId)
+        {
+            var currentPic = await _chatPicBase.Get(p => p.PublicId == ImagePublicId);
+            if (currentPic != null)
+            {
+                await _cloudinaryService.DeleteFile(ImagePublicId);
+                await _chatPicBase.Remove(currentPic);
+                return new SimpleResponseDTO() { IsSuccess = true, Message = "Deletion is done" };
+            }
+            return new SimpleResponseDTO() { IsSuccess = false, Message = "Deletion is failed" };
         }
     }
 }

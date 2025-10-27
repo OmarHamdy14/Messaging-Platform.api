@@ -12,5 +12,7 @@ namespace MessagingPlatformAPI.Services.Interface
         Task<SimpleResponseDTO> Delete(Guid ChaId);
 
         Task SaveChanges(Chat c);
+        Task<SimpleResponseDTO> ChangeChatPic(Chat chat, IFormFile pic);
+        Task<SimpleResponseDTO> DeleteChatPic(string ImagePublicId);
     }
 }

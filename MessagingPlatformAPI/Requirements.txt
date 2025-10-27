@@ -1,8 +1,8 @@
 ﻿1. Presence & Status
 User Status Message
 Do Not Disturb Mode
-Typing Indicator
-Recording Indicator
+Typing Indicator --- XXX
+Recording Indicator --- XXX
 Read Receipts --- done
 Online --- done
 Offline --- done
@@ -11,8 +11,8 @@ Delivery Status --- done
 Message Reactions --- done
 
 2. Messaging Metadata
-Attachments
-ForwardedFrom --- X
+ForwardedFrom --- XXX
+Attachments --- done
 PinnedMessageId --- done (check solution)
 IsForwarded --- done
 SentAt --- done
@@ -26,19 +26,19 @@ ReplyToMessageId --- done (check solution)
 Reactions --- done
 
 3. User Profile Info
-DisplayName
-ProfilePictureUrl
-IsBlocked 
+DisplayName --- XXX
+IsBlocked --- XXX
 BlockedUsers
+ProfilePictureUrl --- done
 About --- done
 PhoneNumber --- done
 Email --- done
 IsVerified --- done
 
 4. Group Chat & Membership
-InviteLink
-MuteUntil
-GroupPictureUrl
+InviteLink --- XXX
+MuteUntil --- XXX
+GroupPictureUrl --- done
 PinnedMessages --- done (check solution)
 IsMuted --- done (check solution)
 GroupName  --- done
@@ -59,8 +59,8 @@ PublicKey
 PrivateKey
 IsTwoFactorEnabled
 BlockedContacts
-LastSeenPrivacy
-ReadReceiptsEnabled
+LastSeenPrivacy --- XXX
+ReadReceiptsEnabled --- XXX
 EncryptedMessages
 
 7. Analytics & Moderation
@@ -71,8 +71,8 @@ IsSuspended
 IsBanned
 LoginHistory
 
-8. Caching
+8. Caching --- XXX
 
 9. Re-add to groups --- done
 
-10. Private or Group Chat
+10. Private or Group Chat --- XXX

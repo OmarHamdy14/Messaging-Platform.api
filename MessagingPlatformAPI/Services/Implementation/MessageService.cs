@@ -12,17 +12,21 @@ namespace MessagingPlatformAPI.Services.Implementation
     public class MessageService : IMessageService
     {
         private readonly IEntityBaseRepository<Message> _base;
+        private readonly IEntityBaseRepository<MessageImage> _messageImageBase;
         private readonly IChatService _chatService;
         private readonly IAccountService _accountService;
+        private readonly ICloudinaryService _cloudinaryService;
         private readonly IHubContext _hubContext;
         private readonly IMapper _mapper;
-        public MessageService(IEntityBaseRepository<Message> @base, IMapper mapper, IChatService chatService, IHubContext hubContext, IAccountService accountService)
+        public MessageService(IEntityBaseRepository<Message> @base, IMapper mapper, IChatService chatService, IHubContext hubContext, IAccountService accountService, ICloudinaryService cloudinaryService, IEntityBaseRepository<MessageImage> messageImageBase)
         {
             _base = @base;
             _mapper = mapper;
             _chatService = chatService;
             _hubContext = hubContext;
             _accountService = accountService;
+            _cloudinaryService = cloudinaryService;
+            _messageImageBase = messageImageBase;
         }
         public async Task<Message> GetById(Guid MessageId)
         {
@@ -40,10 +44,17 @@ namespace MessagingPlatformAPI.Services.Implementation
         {
             return await _base.GetAll(p => p.GroupChatId == GroupChatId);
         }*/
-        public async Task<SimpleResponseDTO> Create(CreateMessageDTO model)
+        public async Task<SimpleResponseDTO> Create(CreateMessageDTO model, List<IFormFile> files)
         {
             var message = _mapper.Map<Message>(model);
             var chat = await _chatService.GetById(model.ChatId);
+            var res = await _cloudinaryService.UploadFiles(files);
+            if (!res.AllSucceeded) return new SimpleResponseDTO() { IsSuccess = false };
+            await _base.Create(message);
+            foreach (var response in res.UploadedPhotos)
+            {
+                await _messageImageBase.Create(new MessageImage() { PublicId=response.PublicId, Url=response.Url, MessageId=message.Id});
+            }
             var allMembers = chat.Members.Where(c => c.MemberId != model.UserId); // all except sender
             foreach (var cm in allMembers)
             {
@@ -56,7 +67,6 @@ namespace MessagingPlatformAPI.Services.Implementation
                     UpdatedAt = DateTime.Now
                 });
             }
-            await _base.Create(message);
             return new SimpleResponseDTO() { IsSuccess = true, Message = "Message creation is done" };
         }
         public async Task<SimpleResponseDTO> Update(Guid MessageId, UpdateMessageDTO model)
@@ -77,6 +87,17 @@ namespace MessagingPlatformAPI.Services.Implementation
             message.IsDeleted = true;
             await _base.Update(message);
             return new SimpleResponseDTO() { IsSuccess = true, Message = "Message deletion is done" };
+        }
+        public async Task<SimpleResponseDTO> DeleteMessagePic(string ImagePublicId)
+        {
+            var currentPic = await _messageImageBase.Get(p => p.PublicId == ImagePublicId);
+            if (currentPic != null)
+            {
+                await _cloudinaryService.DeleteFile(ImagePublicId);
+                await _messageImageBase.Remove(currentPic);
+                return new SimpleResponseDTO() { IsSuccess = true, Message = "Deletion is done" };
+            }
+            return new SimpleResponseDTO() { IsSuccess = false, Message = "Deletion is failed" };
         }
     }
 }

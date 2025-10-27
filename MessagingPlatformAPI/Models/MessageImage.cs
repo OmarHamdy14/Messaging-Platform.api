@@ -7,6 +7,7 @@ namespace MessagingPlatformAPI.Models
         public Guid Id { get; set; }
         public string PublicId { get; set; }
         public string Url { get; set; }
+        public bool IsDeleted { get; set; }
 
         public Guid MessageId { get; set; }
         [ForeignKey("MessageId")]

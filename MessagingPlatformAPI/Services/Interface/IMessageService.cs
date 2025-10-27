@@ -13,5 +13,6 @@ namespace MessagingPlatformAPI.Services.Interface
         Task<SimpleResponseDTO> Create(CreateMessageDTO model);
         Task<SimpleResponseDTO> Update(Guid MessageId, UpdateMessageDTO model);
         Task<SimpleResponseDTO> Delete(Guid MessageId);
+        Task<SimpleResponseDTO> DeleteMessagePic(string ImagePublicId);
     }
 }

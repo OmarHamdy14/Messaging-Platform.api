@@ -16,5 +16,6 @@ namespace MessagingPlatformAPI.Helpers.DTOs.AccountDTOs
         [Required]
         [RegularExpression(@"^\d{11}$", ErrorMessage = "")]
         public string PhoneNumber { get; set; }
+        // public IFormFile ProfileImage { get; set; }
     }
 }

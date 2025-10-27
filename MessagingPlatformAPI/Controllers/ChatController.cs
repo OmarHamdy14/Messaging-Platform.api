@@ -2,6 +2,7 @@
 using MessagingPlatformAPI.Helpers.DTOs.ResponsesDTOs;
 using MessagingPlatformAPI.Models;
 using MessagingPlatformAPI.Services.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -175,6 +176,38 @@ namespace MessagingPlatformAPI.Controllers
                 chat.PinnedMessage = await _messageService.GetById(MessageId);         // is this right , or there is no need for that and it is done automatic ???
                 await _chatService.SaveChanges(chat);
                 return Ok(new { Message=$"Pin this message in the chat with Id {ChatId} is done"});
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "Something went wrong." });
+            }
+        }
+        [Authorize]
+        [HttpPut("ChangeChatPic/{ChatId}")]
+        public async Task<IActionResult> ChangeChatPic(Guid ChatId, [FromBody] IFormFile pic)
+        {
+            if (string.IsNullOrEmpty(ChatId.ToString()))
+            {
+                _logger.LogWarning("This Id '{Id}' is wrong", ChatId);
+                return BadRequest(new { Message = "Chat-Id is not found" });
+            }
+            if (pic == null || pic.Length == 0) return BadRequest();
+            try
+            {
+                var chat = await _chatService.GetById(ChatId);
+                if (chat is null)
+                {
+                    _logger.LogWarning("This {ChatId} is not found", ChatId);
+                    return NotFound();
+                }
+
+                var result = await _chatService.ChangeChatPic(chat, pic);
+                if (result.IsSuccess)
+                {
+                    _logger.LogInformation("chat Pic is updated successfully");
+                    return Ok(new { Message = "Changing Chat Picture is done successfully." });
+                }
+                return Ok(new { Message = "Changing Chat Picture is not done." }); // should this response be ok or badrequest ???
             }
             catch (Exception ex)
             {

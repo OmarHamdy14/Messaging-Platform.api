@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using MessagingPlatformAPI.Base.Interface;
 using MessagingPlatformAPI.Helpers.DTOs.AccountDTOs;
+using MessagingPlatformAPI.Helpers.DTOs.ResponsesDTOs;
 using MessagingPlatformAPI.Helpers.JWTconfig;
 using MessagingPlatformAPI.Models;
 using MessagingPlatformAPI.Services.Interface;
@@ -14,13 +16,17 @@ namespace MessagingPlatformAPI.Services.Implementation
     public class AccountService : IAccountService
     {
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IEntityBaseRepository<ProfileImage> _profileImageBase;
+        private readonly ICloudinaryService _cloudinaryService;
         private readonly IMapper _mapper;
         private readonly JWT _jwt;
-        public AccountService(UserManager<ApplicationUser> userManager, IMapper mapper, JWT jwt)
+        public AccountService(UserManager<ApplicationUser> userManager, IMapper mapper, JWT jwt, ICloudinaryService cloudinaryService, IEntityBaseRepository<ProfileImage> profileImageBase)
         {
             _userManager = userManager;
             _mapper = mapper;
             _jwt = jwt;
+            _cloudinaryService = cloudinaryService;
+            _profileImageBase = profileImageBase;
         }
         public async Task<ApplicationUser> FindById(string userId)
         {
@@ -38,14 +44,19 @@ namespace MessagingPlatformAPI.Services.Implementation
         {
             return _userManager.Users.ToList();
         }
-        public async Task<AuthModel> Register(RegisterationDTO model)
+        public async Task<AuthModel> Register(RegisterationDTO model, IFormFile profilePic)
         {
             if (await FindByEmail(model.Email) is not null) return new AuthModel() { Message = "Email is already registered." };
             //if (await FindByUserName(model.UserName) is not null) return new AuthModel() { Message = "User Name is already registered." };
             var user = _mapper.Map<ApplicationUser>(model);
             var res = await _userManager.CreateAsync(user);
-            if (res.Succeeded) return new AuthModel() { Message = "Registration is Succeeded.", IsAuthenticated = true };
-            return new AuthModel() { Message = res.Errors.ToString() };
+            var cloudinaryRes = await _cloudinaryService.UploadFile(profilePic);
+            if (cloudinaryRes.IsSuccess)
+            {
+                await _profileImageBase.Create(new ProfileImage() { PublicId = cloudinaryRes.PublicId, Url = cloudinaryRes.Url, UserId = user.Id });
+                return new AuthModel() { Message = "Registration is Succeeded.", IsAuthenticated = true };
+            }
+            return new AuthModel() { Message = res.Errors.ToString() + "/n" + cloudinaryRes.Message };
         }
         public async Task<AuthModel> GetTokenAsync(LogInDTO model)
         {
@@ -103,6 +114,33 @@ namespace MessagingPlatformAPI.Services.Implementation
         public async Task SaveChangesAsync(ApplicationUser user)
         {
             await _userManager.UpdateAsync(user);
+        }
+        public async Task<SimpleResponseDTO> ChangeProfilePic(ApplicationUser User, IFormFile pic)
+        {
+            var currentPic = await _profileImageBase.Get(p => p.UserId == User.Id);
+            if (currentPic != null)
+            {
+                await _cloudinaryService.DeleteFile(currentPic.PublicId);
+                await _profileImageBase.Remove(currentPic);
+            }
+            var cloudinaryRes = await _cloudinaryService.UploadFile(pic);
+            if (cloudinaryRes.IsSuccess)
+            {
+                await _profileImageBase.Create(new ProfileImage() { PublicId = cloudinaryRes.PublicId, Url = cloudinaryRes.Url, UserId = User.Id });
+                return new SimpleResponseDTO() { IsSuccess = true, Message = "Changing profile pidture is done" };
+            }
+            return new SimpleResponseDTO() { IsSuccess = false };
+        }
+        public async Task<SimpleResponseDTO> DeleteProfilePic(string ImagePublicId)
+        {
+            var currentPic = await _profileImageBase.Get(p => p.PublicId == ImagePublicId);
+            if (currentPic != null)
+            {
+                await _cloudinaryService.DeleteFile(ImagePublicId);
+                await _profileImageBase.Remove(currentPic);
+                return new SimpleResponseDTO() { IsSuccess = true, Message = "Deletion is done" };
+            }
+            return new SimpleResponseDTO() { IsSuccess = false, Message = "Deletion is failed" };
         }
     }
 }

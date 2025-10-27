@@ -22,5 +22,6 @@ namespace MessagingPlatformAPI.Models
         public DbSet<Reaction> Reactions { get; set; }
         public DbSet<MessageImage> MessageImages { get; set; }
         public DbSet<ProfileImage> ProfileImages { get; set; }
+        public DbSet<ChatImage> ChatImages { get; set; }
     }
 }

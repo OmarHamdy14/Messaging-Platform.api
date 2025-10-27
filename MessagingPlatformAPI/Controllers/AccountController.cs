@@ -12,12 +12,14 @@ namespace MessagingPlatformAPI.Controllers
     {
         private readonly IAccountService _accountService;
         private readonly IChatMembersService _chatMembersService;
+        private readonly ICloudinaryService _cloudinaryService;
         private readonly ILogger<AccountController> _logger;
-        public AccountController(IAccountService accountService, ILogger<AccountController> logger, IChatMembersService chatMembersService)
+        public AccountController(IAccountService accountService, ILogger<AccountController> logger, IChatMembersService chatMembersService, ICloudinaryService cloudinaryService)
         {
             _accountService = accountService;
             _logger = logger;
             _chatMembersService = chatMembersService;
+            _cloudinaryService = cloudinaryService;
         }
         [Authorize]
         [HttpGet("FindById/{userId}")]
@@ -91,7 +93,7 @@ namespace MessagingPlatformAPI.Controllers
         }
         [Authorize]
         [HttpPost("Register")]
-        public async Task<IActionResult> Register([FromBody] RegisterationDTO model)
+        public async Task<IActionResult> Register([FromBody] RegisterationDTO model, IFormFile profilePic)
         {
             if (!ModelState.IsValid)
             {
@@ -100,7 +102,7 @@ namespace MessagingPlatformAPI.Controllers
             }
             try
             {
-                var authModel = await _accountService.Register(model);
+                var authModel = await _accountService.Register(model, profilePic);
                 if (!authModel.IsAuthenticated)
                 {
                     _logger.LogWarning("Registration of this user with '{email}' is not succedded", model.Email);
@@ -195,7 +197,39 @@ namespace MessagingPlatformAPI.Controllers
                     _logger.LogInformation("{FName} {lName}'password is updated successfully", user.FirstName, user.LastName);
                     return Ok(new { Message = "Changing Password is done successfully." });
                 }
-                return Ok(new { Message = "Changing Password is not done." });
+                return Ok(new { Message = "Changing Password is not done." }); // should this respose be ok or badrequest ???
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "Something went wrong." });
+            }
+        }
+        [Authorize]
+        [HttpPut("ChangeProfilePic/{userId}")]
+        public async Task<IActionResult> ChangeProfilePic(string userId, [FromBody] IFormFile pic) 
+        {
+            if (string.IsNullOrEmpty(userId))
+            {
+                _logger.LogWarning("This {UserId} is not right", userId);
+                return BadRequest();
+            }
+            if (pic == null || pic.Length == 0) return BadRequest();
+            try
+            {
+                var user = await _accountService.FindById(userId);
+                if (user is null)
+                {
+                    _logger.LogWarning("This {UserId} is not found", userId);
+                    return NotFound();
+                }
+
+                var result = await _accountService.ChangeProfilePic(user, pic);
+                if (result.IsSuccess)
+                {
+                    _logger.LogInformation("{FName} {lName}'password is updated successfully", user.FirstName, user.LastName);
+                    return Ok(new { Message = "Changing Profile Picture is done successfully." });
+                }
+                return Ok(new { Message = "Changing Profile Picture is not done." }); // should this response be ok or badrequest ???
             }
             catch (Exception ex)
             {
