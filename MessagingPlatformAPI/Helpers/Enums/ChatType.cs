@@ -3,6 +3,6 @@
     public enum ChatType
     {
         prv,
-        pub
+        grp
     }
 }

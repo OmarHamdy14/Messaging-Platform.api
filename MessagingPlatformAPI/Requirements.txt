@@ -75,4 +75,4 @@ LoginHistory
 
 9. Re-add to groups --- done
 
-10. Private or Group Chat --- XXX
+10. Private or Group Chat --- done
