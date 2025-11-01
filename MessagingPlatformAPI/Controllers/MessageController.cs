@@ -6,6 +6,7 @@ using MessagingPlatformAPI.SignalrConfig;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using System.Security.Claims;
 
 namespace MessagingPlatformAPI.Controllers
 {
@@ -14,17 +15,23 @@ namespace MessagingPlatformAPI.Controllers
     public class MessageController : ControllerBase
     {
         private readonly IMessageService _messageService;
+        private readonly IChatService _chatService;
+        private readonly IBlockingService _blockingService;
+        private readonly IChatMembersService _chatMembersService;
         private readonly IHubContext<ChatHub> _hub;
         private readonly IChatHub _chatHub;
         private readonly IAccountService _accountService;
         private readonly ILogger<MessageController> _logger;
-        public MessageController(IMessageService messageService, IHubContext<ChatHub> hub, IChatHub chatHub, IAccountService accountService, ILogger<MessageController> logger)
+        public MessageController(IMessageService messageService, IHubContext<ChatHub> hub, IChatHub chatHub, IAccountService accountService, ILogger<MessageController> logger, IChatService chatService, IBlockingService blockingService, IChatMembersService chatMembersService)
         {
             _messageService = messageService;
             _hub = hub;
             _chatHub = chatHub;
             _accountService = accountService;
             _logger = logger;
+            _chatService = chatService;
+            _blockingService = blockingService;
+            _chatMembersService = chatMembersService;
         }
         [HttpGet("GetAllByChatId/{ChatId}")]
         public async Task<IActionResult> GetAllByChatId(Guid ChatId)
@@ -51,6 +58,16 @@ namespace MessagingPlatformAPI.Controllers
             {
                 _logger.LogWarning("User's inputs are wrong");
                 return BadRequest(ModelState);
+            }
+            var chat = await _chatService.GetById(model.ChatId);
+            if(chat.chatType == Helpers.Enums.ChatType.prv)
+            {
+                var SenderId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var mems = await _chatMembersService.GetAllByChatId(model.ChatId);
+                var RecivId = mems.Where(m => m.MemberId != SenderId).Select(m => m.MemberId).FirstOrDefault();
+                
+                var IsBlocked = await _blockingService.GetByBlockerIdAndBlodkedId(RecivId, SenderId);
+                if (IsBlocked is not null) return BadRequest(new { Message = "You can't send a message" });
             }
             try
             {

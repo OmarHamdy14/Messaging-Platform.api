@@ -4,6 +4,7 @@ using MessagingPlatformAPI.Models;
 using MessagingPlatformAPI.Services.Implementation;
 using MessagingPlatformAPI.Services.Interface;
 using Microsoft.AspNetCore.SignalR;
+using System.Security.Claims;
 
 namespace MessagingPlatformAPI.SignalrConfig
 {
@@ -11,19 +12,32 @@ namespace MessagingPlatformAPI.SignalrConfig
     {
         private readonly IAccountService _accountService;
         private readonly IMessageService _messageService;
-        private readonly IUserConnectionService _userConnectionService;
+        private readonly IChatService _chatService;
+        private readonly IBlockingService _blockingService;
         private readonly IChatMembersService _chatMembersService;
+        private readonly IUserConnectionService _userConnectionService;
         private readonly ILogger<ChatHub> _logger;
-        public ChatHub(IAccountService accountService, IChatMembersService chatMembersService, ILogger<ChatHub> logger, IUserConnectionService userConnectionService, IMessageService messageService)
+        public ChatHub(IAccountService accountService, IChatMembersService chatMembersService, ILogger<ChatHub> logger, IUserConnectionService userConnectionService, IMessageService messageService, IChatService chatService, IBlockingService blockingService)
         {
             _accountService = accountService;
             _chatMembersService = chatMembersService;
             _logger = logger;
             _userConnectionService = userConnectionService;
             _messageService = messageService;
+            _chatService = chatService;
+            _blockingService = blockingService;
         }
         public async Task SendMessage(string msg, Guid ChatId)
         {
+            var chat = await _chatService.GetById(ChatId);
+            if (chat.chatType == Helpers.Enums.ChatType.prv)
+            {
+                var SenderId = Context.UserIdentifier;
+                var mems = await _chatMembersService.GetAllByChatId(ChatId);
+                var RecivId = mems.Where(m => m.MemberId != SenderId).Select(m => m.MemberId).FirstOrDefault();
+
+                if (await _blockingService.IsBlocked(RecivId, SenderId)) return;
+            }
             //await Clients.Group(ChatId.ToString()).ReceiveMessage(user.UserName,msg);
             var userId = Context.UserIdentifier;
             var user = await _accountService.FindById(userId);
@@ -39,25 +53,25 @@ namespace MessagingPlatformAPI.SignalrConfig
 
 
 
-        public async Task StartTypingIndicator(Guid ChatId)
+        public async Task SendStartTypingIndicator(Guid ChatId)
         {
             var userId = Context.UserIdentifier;
             
             await Clients.GroupExcept(ChatId.ToString(), new [] {userId}).SendAsync("StartTyping",new {UserId=userId, ChatId=ChatId, IsTyping=true});
         }
-        public async Task StopTypingIndicator(Guid ChatId)
+        public async Task SendStopTypingIndicator(Guid ChatId)
         {
             var userId = Context.UserIdentifier;
 
             await Clients.GroupExcept(ChatId.ToString(), new[] { userId }).SendAsync("StopTyping", new { UserId = userId, ChatId = ChatId, IsTyping = false });
         }
-        public async Task StartRecordingIndicator(Guid ChatId)
+        public async Task SendStartRecordingIndicator(Guid ChatId)
         {
             var userId = Context.UserIdentifier;
 
             await Clients.GroupExcept(ChatId.ToString(), new[] { userId }).SendAsync("StartRecording", new { UserId = userId, ChatId = ChatId, IsRecording = true });
         }
-        public async Task StopRecordingIndicator(Guid ChatId)
+        public async Task SendStopRecordingIndicator(Guid ChatId)
         {
             var userId = Context.UserIdentifier;
 

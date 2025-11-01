@@ -1,8 +1,8 @@
 ﻿1. Presence & Status
 User Status Message
 Do Not Disturb Mode
-Typing Indicator --- XXX
-Recording Indicator --- XXX
+Typing Indicator --- done
+Recording Indicator --- done
 Read Receipts --- done
 Online --- done
 Offline --- done
@@ -76,3 +76,7 @@ LoginHistory
 9. Re-add to groups --- done
 
 10. Private or Group Chat --- done
+
+11. Answer Questions in comment
+
+12- prevent sending messages to deleted or leaved groups

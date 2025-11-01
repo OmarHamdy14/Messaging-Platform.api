@@ -27,6 +27,8 @@ namespace MessagingPlatformAPI.Models
 
         public ICollection<Reaction> reactions { get; set; }
 
+        public ICollection<BlockedUser> BlockedUsers { get; set; }
+
         /*public ICollection<Users_Group> ChatsGroup { get; set; }
         public ICollection<Users_Private> ChatsPrivate { get; set; }*/
     }
