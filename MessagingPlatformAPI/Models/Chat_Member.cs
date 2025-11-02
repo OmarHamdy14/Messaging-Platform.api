@@ -1,4 +1,6 @@
-﻿namespace MessagingPlatformAPI.Models
+﻿using System.ComponentModel;
+
+namespace MessagingPlatformAPI.Models
 {
     public class Chat_Member
     {
@@ -7,6 +9,7 @@
         public string MemberId { get; set; }
         public ApplicationUser Member { get; set; }
 
+        [DefaultValue(false)]
         public bool IsAdmin { get; set; }
 
         public Guid ChatId { get; set; }

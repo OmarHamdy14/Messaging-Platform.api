@@ -1,6 +1,6 @@
 ﻿1. Presence & Status
 User Status Message
-Do Not Disturb Mode
+Do Not Disturb Mode --- XXX ***
 Typing Indicator --- done
 Recording Indicator --- done
 Read Receipts --- done
@@ -27,8 +27,8 @@ Reactions --- done
 
 3. User Profile Info
 DisplayName --- XXX
-IsBlocked --- XXX
-BlockedUsers
+IsBlocked --- done
+BlockedUsers --- done
 ProfilePictureUrl --- done
 About --- done
 PhoneNumber --- done
@@ -36,7 +36,7 @@ Email --- done
 IsVerified --- done
 
 4. Group Chat & Membership
-InviteLink --- XXX
+InviteLink --- XXX ***
 MuteUntil --- XXX
 GroupPictureUrl --- done
 PinnedMessages --- done (check solution)
@@ -59,8 +59,8 @@ PublicKey
 PrivateKey
 IsTwoFactorEnabled
 BlockedContacts
-LastSeenPrivacy --- XXX
-ReadReceiptsEnabled --- XXX
+LastSeenPrivacy --- XXX ***
+ReadReceiptsEnabled --- XXX ***
 EncryptedMessages
 
 7. Analytics & Moderation
@@ -71,7 +71,7 @@ IsSuspended
 IsBanned
 LoginHistory
 
-8. Caching --- XXX
+8. Caching --- XXX ***
 
 9. Re-add to groups --- done
 
@@ -79,4 +79,4 @@ LoginHistory
 
 11. Answer Questions in comment
 
-12- prevent sending messages to deleted or leaved groups
+12- prevent sending messages to deleted or leaved groups --- done

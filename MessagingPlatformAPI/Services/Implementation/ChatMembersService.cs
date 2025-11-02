@@ -22,6 +22,10 @@ namespace MessagingPlatformAPI.Services.Implementation
             await _base.Update(member);
             return new SimpleResponseDTO() { IsSuccess = true, Message = $"Succeeded !!! Making This record: MemberId={model.MemberId} & ChatId={model.ChatId} as a admin is done" };
         }
+        public async Task<Chat_Member> GetByChatIdAndMemberId(Guid chatId, string memberId)
+        {
+            return await _base.Get(cm => cm.ChatId == chatId && cm.MemberId == memberId);
+        }
         public async Task<List<Chat_Member>> GetAllByUserId(string UserId)
         {
             return await _base.GetAll(c => c.MemberId == UserId);

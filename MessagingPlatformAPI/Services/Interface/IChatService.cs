@@ -11,6 +11,7 @@ namespace MessagingPlatformAPI.Services.Interface
         Task<SimpleResponseDTO> Update(Guid ChaId, UpdateChatDTO model);
         Task<SimpleResponseDTO> Delete(Guid ChaId);
 
+        Task<SimpleResponseDTO> LeaveGroupChat(Guid ChatId);
         Task SaveChanges(Chat c);
         Task<SimpleResponseDTO> ChangeChatPic(Chat chat, IFormFile pic);
         Task<SimpleResponseDTO> DeleteChatPic(string ImagePublicId);

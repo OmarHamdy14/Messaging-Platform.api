@@ -6,6 +6,8 @@ namespace MessagingPlatformAPI.Services.Interface
 {
     public interface IMessageService
     {
+        Task<List<Message>> GetAllAfterDatetimeWithChatId(DateTime dt, Guid ChatId);
+        Task<List<Message>> GetAllAfterDatetime(DateTime dt);
         Task<Message> GetById(Guid MessageId);
         Task<List<Message>> GetAllByChatId(Guid ChatId);
         /*Task<List<Message>> GetAllByPrivateChatId(Guid PrivateChatId);

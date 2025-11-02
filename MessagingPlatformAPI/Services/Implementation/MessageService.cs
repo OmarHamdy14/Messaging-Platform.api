@@ -28,6 +28,14 @@ namespace MessagingPlatformAPI.Services.Implementation
             _cloudinaryService = cloudinaryService;
             _messageImageBase = messageImageBase;
         }
+        public async Task<List<Message>> GetAllAfterDatetimeWithChatId(DateTime dt, Guid ChatId)
+        {
+            return await _base.GetAll(m => m.CreatedDate > dt && m.ChatId == ChatId);
+        }
+        public async Task<List<Message>> GetAllAfterDatetime(DateTime dt)
+        {
+            return await _base.GetAll(m => m.CreatedDate > dt);
+        }
         public async Task<Message> GetById(Guid MessageId)
         {
             return await _base.Get(m => m.Id == MessageId); 

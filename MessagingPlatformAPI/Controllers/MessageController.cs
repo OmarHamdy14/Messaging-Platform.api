@@ -69,6 +69,12 @@ namespace MessagingPlatformAPI.Controllers
                 var IsBlocked = await _blockingService.GetByBlockerIdAndBlodkedId(RecivId, SenderId);
                 if (IsBlocked is not null) return BadRequest(new { Message = "You can't send a message" });
             }
+            if (chat.chatType == Helpers.Enums.ChatType.grp)
+            {
+                var SenderId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var mem = await _chatMembersService.GetByChatIdAndMemberId(model.ChatId, SenderId);
+                if (mem is null) return BadRequest(new {Message = "Failed !! you arenot member of this group"});
+            }
             try
             {
                 var res = await _messageService.Create(model);

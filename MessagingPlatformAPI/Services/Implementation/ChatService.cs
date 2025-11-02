@@ -58,7 +58,13 @@ namespace MessagingPlatformAPI.Services.Implementation
             await _base.Remove(chat);
             return new SimpleResponseDTO() { IsSuccess = true, Message = "Chat deletion is done" };
         }
-
+        public async Task<SimpleResponseDTO> LeaveGroupChat(Guid ChatId)
+        {
+            var chat = await _base.Get(c => c.Id == ChatId);
+            if (chat == null) return new SimpleResponseDTO() { IsSuccess = false, Message = "Chat is not found" };
+            chat.IsLeft = true;
+            return new SimpleResponseDTO() { IsSuccess = true, Message = "Now .. you are not a member of this chat" };
+        }
 
         public async Task SaveChanges(Chat c)
         {

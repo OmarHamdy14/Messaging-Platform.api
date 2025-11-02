@@ -1,5 +1,6 @@
 ﻿using MessagingPlatformAPI.Helpers.DTOs.MessageDTOs;
 using MessagingPlatformAPI.Helpers.DTOs.UserConnectionDTOs;
+using MessagingPlatformAPI.Helpers.Enums;
 using MessagingPlatformAPI.Models;
 using MessagingPlatformAPI.Services.Implementation;
 using MessagingPlatformAPI.Services.Interface;
@@ -38,17 +39,28 @@ namespace MessagingPlatformAPI.SignalrConfig
 
                 if (await _blockingService.IsBlocked(RecivId, SenderId)) return;
             }
+            if (chat.chatType == Helpers.Enums.ChatType.grp)
+            {
+                var SenderId = Context.UserIdentifier;
+                var mem = await _chatMembersService.GetByChatIdAndMemberId(ChatId,SenderId);
+                if (mem is null) return;
+            }
             //await Clients.Group(ChatId.ToString()).ReceiveMessage(user.UserName,msg);
             var userId = Context.UserIdentifier;
             var user = await _accountService.FindById(userId);
-            await Clients.Group(ChatId.ToString()).SendAsync("ReceiveMessage", user.UserName, msg);
             await _messageService.Create(new CreateMessageDTO() { Content = msg, ChatId = ChatId, UserId = userId });
+            await Clients.Group(ChatId.ToString()).SendAsync("ReceiveMessage", user.UserName, msg);
             _logger.LogInformation("Sending message from user '{fname} {lname}' is succedded", user.FirstName, user.LastName);
         }
+
+
         public async Task AddUserToGroup(Guid GroupId)
         {
-            var user = await _accountService.FindById(Context.UserIdentifier);
             await Groups.AddToGroupAsync(Context.ConnectionId, GroupId.ToString());
+        }
+        public async Task RemoveUserFromGorup(Guid groupId)
+        {
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupId.ToString());
         }
 
 
@@ -57,28 +69,51 @@ namespace MessagingPlatformAPI.SignalrConfig
         {
             var userId = Context.UserIdentifier;
             
-            await Clients.GroupExcept(ChatId.ToString(), new [] {userId}).SendAsync("StartTyping",new {UserId=userId, ChatId=ChatId, IsTyping=true});
+            await Clients.GroupExcept(ChatId.ToString(), new [] {userId}).SendAsync("StartTyping",new {UserId=userId, ChatId=ChatId});
         }
         public async Task SendStopTypingIndicator(Guid ChatId)
         {
             var userId = Context.UserIdentifier;
 
-            await Clients.GroupExcept(ChatId.ToString(), new[] { userId }).SendAsync("StopTyping", new { UserId = userId, ChatId = ChatId, IsTyping = false });
+            await Clients.GroupExcept(ChatId.ToString(), new[] { userId }).SendAsync("StopTyping", new { UserId = userId, ChatId = ChatId});
         }
         public async Task SendStartRecordingIndicator(Guid ChatId)
         {
             var userId = Context.UserIdentifier;
 
-            await Clients.GroupExcept(ChatId.ToString(), new[] { userId }).SendAsync("StartRecording", new { UserId = userId, ChatId = ChatId, IsRecording = true });
+            await Clients.GroupExcept(ChatId.ToString(), new[] { userId }).SendAsync("StartRecording", new { UserId = userId, ChatId = ChatId});
         }
         public async Task SendStopRecordingIndicator(Guid ChatId)
         {
             var userId = Context.UserIdentifier;
 
-            await Clients.GroupExcept(ChatId.ToString(), new[] { userId }).SendAsync("StopRecording", new { UserId = userId, ChatId = ChatId, IsRecording = false });
+            await Clients.GroupExcept(ChatId.ToString(), new[] { userId }).SendAsync("StopRecording", new { UserId = userId, ChatId = ChatId });
         }
 
-
+        public async Task ChangeMessageStatusofChatToSeen(Guid ChatId) 
+        {
+            var UserId = Context.UserIdentifier;
+            var user = await _accountService.FindById(UserId);
+            var DeliveredMsgs = await _messageService.GetAllAfterDatetimeWithChatId(user.LastSeen, ChatId);
+            foreach (var msg in DeliveredMsgs)
+            {
+                // difference between Now & UtcNow ???
+                msg.messageStatuses.Add(new MessageStatus() { MessageId = msg.Id, RecieverId = UserId, status = MessageStatusEnum.seen, UpdatedAt = DateTime.UtcNow });
+                await Clients.GroupExcept(msg.ChatId.ToString(), new[] { UserId }).SendAsync("ChangeMessageStatusToSeen", msg.Id);
+            }
+        }
+        public async Task ChangeMessageStatusofChatToDelivered(Guid ChatId)
+        {
+            var UserId = Context.UserIdentifier;
+            var user = await _accountService.FindById(UserId);
+            var DeliveredMsgs = await _messageService.GetAllAfterDatetimeWithChatId(user.LastSeen, ChatId);
+            foreach (var msg in DeliveredMsgs)
+            {
+                // difference between Now & UtcNow ???
+                msg.messageStatuses.Add(new MessageStatus() { MessageId = msg.Id, RecieverId = UserId, status = MessageStatusEnum.delivered, UpdatedAt = DateTime.UtcNow });
+                await Clients.GroupExcept(msg.ChatId.ToString(), new[] { UserId }).SendAsync("ChangeMessageStatusToSeen", msg.Id);
+            }
+        }
 
         public override async Task OnConnectedAsync()
         {
@@ -88,6 +123,14 @@ namespace MessagingPlatformAPI.SignalrConfig
             await _accountService.SaveChangesAsync(user);
 
             await _userConnectionService.Create(new CreateUserConnectionDTO() { UserId = UserId ,ConnectionId = Context.ConnectionId });
+
+            var UnSeenMessages = await _messageService.GetAllAfterDatetime(user.LastSeen);
+            foreach(var msg in UnSeenMessages)
+            {
+                // difference between Now & UtcNow ???
+                msg.messageStatuses.Add(new MessageStatus() { MessageId = msg.Id, RecieverId = UserId, status = MessageStatusEnum.delivered, UpdatedAt = DateTime.UtcNow });
+                await Clients.GroupExcept(msg.ChatId.ToString(), new[] { UserId }).SendAsync("ChangeMessageStatusToDelivered", msg.Id);
+            }
 
             var groups = await _chatMembersService.GetAllByUserId(UserId);
             foreach (var group in groups)

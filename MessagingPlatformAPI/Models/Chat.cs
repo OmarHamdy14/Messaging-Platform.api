@@ -1,4 +1,5 @@
 ﻿using MessagingPlatformAPI.Helpers.Enums;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MessagingPlatformAPI.Models
@@ -8,10 +9,14 @@ namespace MessagingPlatformAPI.Models
         public Guid Id { get; set; }
         public string? Name { get; set; }
         public DateTime CreatedDate { get; set; }
+        [DefaultValue(false)]
         public bool IsDeleted { get; set; }
+        [DefaultValue(false)]
+        public bool IsLeft { get; set; }
 
         public ChatType chatType { get; set; }
 
+        [DefaultValue(false)]
         public bool IsMuted { get; set; }
 
         public string? ChatCreatorId { get; set; }
