@@ -20,7 +20,7 @@ namespace MessagingPlatformAPI.Services.Implementation
         {
             var token = _mapper.Map<DeviceToken>(model);
             token.UserId = UserId;
-            token.CerateedAt = DateTime.UtcNow;
+            token.CeratedAt = DateTime.UtcNow;
             await _base.Create(token);
             return new SimpleResponseDTO() { IsSuccess=true };
         }

@@ -1,4 +1,6 @@
 using AutoMapper;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
 using MessagingPlatformAPI.Base.Implementation;
 using MessagingPlatformAPI.Base.Interface;
 using MessagingPlatformAPI.CloudinaryConfigs;
@@ -72,6 +74,12 @@ namespace MessagingPlatformAPI
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Key"]))
                     };
                 });
+
+            var firebaseCredential = GoogleCredential.FromFile("");
+            FirebaseApp.Create(new AppOptions
+            {
+                Credential = firebaseCredential
+            });
 
             builder.Services.AddAuthentication(); // ??????????
             builder.Services.AddAuthorization();

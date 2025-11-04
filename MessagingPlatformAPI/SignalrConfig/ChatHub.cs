@@ -28,7 +28,7 @@ namespace MessagingPlatformAPI.SignalrConfig
             _chatService = chatService;
             _blockingService = blockingService;
         }
-        public async Task SendMessage(string msg, Guid ChatId)
+        public async Task SendMessage(string msg, Guid ChatId, List<IFormFile> files)
         {
             var chat = await _chatService.GetById(ChatId);
             if (chat.chatType == Helpers.Enums.ChatType.prv)
@@ -48,7 +48,7 @@ namespace MessagingPlatformAPI.SignalrConfig
             //await Clients.Group(ChatId.ToString()).ReceiveMessage(user.UserName,msg);
             var userId = Context.UserIdentifier;
             var user = await _accountService.FindById(userId);
-            await _messageService.Create(new CreateMessageDTO() { Content = msg, ChatId = ChatId, UserId = userId });
+            await _messageService.Create(new CreateMessageDTO() { Content = msg, ChatId = ChatId, UserId = userId }, files);
             await Clients.Group(ChatId.ToString()).SendAsync("ReceiveMessage", user.UserName, msg);
             _logger.LogInformation("Sending message from user '{fname} {lname}' is succedded", user.FirstName, user.LastName);
         }

@@ -52,7 +52,7 @@ namespace MessagingPlatformAPI.Controllers
             }
         }
         [HttpPost("Create")]
-        public async Task<IActionResult> Create([FromBody] CreateMessageDTO model) // send message __
+        public async Task<IActionResult> Create([FromBody] CreateMessageDTO model, List<IFormFile> files) // send message __
         {
             if (!ModelState.IsValid)
             {
@@ -77,7 +77,7 @@ namespace MessagingPlatformAPI.Controllers
             }
             try
             {
-                var res = await _messageService.Create(model);
+                var res = await _messageService.Create(model, files);
                 if (res.IsSuccess)
                 {
                     // await _chatHub.SendMessage(await _accountService.FindById(model.UserId), model.Content, model.ChatId);
