@@ -24,5 +24,6 @@ namespace MessagingPlatformAPI.Models
         public DbSet<ProfileImage> ProfileImages { get; set; }
         public DbSet<ChatImage> ChatImages { get; set; }
         public DbSet<BlockedUser> BlockedUsers { get; set; }
+        public DbSet<DeviceToken> deviceTokens { get; set; }
     }
 }
