@@ -18,15 +18,17 @@ namespace MessagingPlatformAPI.Services.Implementation
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IEntityBaseRepository<ProfileImage> _profileImageBase;
         private readonly ICloudinaryService _cloudinaryService;
+        private readonly IUserSettingsService _userSettingsService;
         private readonly IMapper _mapper;
         private readonly JWT _jwt;
-        public AccountService(UserManager<ApplicationUser> userManager, IMapper mapper, JWT jwt, ICloudinaryService cloudinaryService, IEntityBaseRepository<ProfileImage> profileImageBase)
+        public AccountService(UserManager<ApplicationUser> userManager, IMapper mapper, JWT jwt, ICloudinaryService cloudinaryService, IEntityBaseRepository<ProfileImage> profileImageBase, IUserSettingsService userSettingsService)
         {
             _userManager = userManager;
             _mapper = mapper;
             _jwt = jwt;
             _cloudinaryService = cloudinaryService;
             _profileImageBase = profileImageBase;
+            _userSettingsService = userSettingsService;
         }
         public async Task<ApplicationUser> FindById(string userId)
         {
@@ -50,6 +52,11 @@ namespace MessagingPlatformAPI.Services.Implementation
             //if (await FindByUserName(model.UserName) is not null) return new AuthModel() { Message = "User Name is already registered." };
             var user = _mapper.Map<ApplicationUser>(model);
             var res = await _userManager.CreateAsync(user);
+            if (res.Succeeded)
+            {
+                var usr = await FindByEmail(model.Email);
+                await _userSettingsService.Create(usr.Id);
+            }
             var cloudinaryRes = await _cloudinaryService.UploadFile(profilePic);
             if (cloudinaryRes.IsSuccess)
             {

@@ -79,4 +79,10 @@ LoginHistory
 
 11. Answer Questions in comment
 
-12- prevent sending messages to deleted or leaved groups --- done
+12. prevent sending messages to deleted or leaved groups --- done
+
+13. LastSennPrivacy: friends except { .... } --- X
+
+14. delivered status after use FCM
+
+15. Mapping

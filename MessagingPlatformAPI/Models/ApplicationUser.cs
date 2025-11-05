@@ -12,12 +12,17 @@ namespace MessagingPlatformAPI.Models
         public bool IsOnline { get; set; }
         public DateTime LastSeen { get; set; }
         
-        public bool IsVerified { get; set; }
         public string Bio { get; set; }
+
+
 
         public Guid ProfileImageId { get; set; }
         [ForeignKey("ProfileImageId")]
         public ProfileImage ProfileImage { get; set; }
+
+        public Guid userSettingsId { get; set; }
+        [ForeignKey("userSettingsId")]
+        public UserSettings userSettings { get; set; }
 
         public ICollection<Chat_Member> Chats { get; set; }  // ??????
 
