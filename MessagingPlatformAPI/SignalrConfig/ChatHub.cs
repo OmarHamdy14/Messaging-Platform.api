@@ -17,8 +17,9 @@ namespace MessagingPlatformAPI.SignalrConfig
         private readonly IBlockingService _blockingService;
         private readonly IChatMembersService _chatMembersService;
         private readonly IUserConnectionService _userConnectionService;
+        private readonly IMessageStatusService _messageStatusService;
         private readonly ILogger<ChatHub> _logger;
-        public ChatHub(IAccountService accountService, IChatMembersService chatMembersService, ILogger<ChatHub> logger, IUserConnectionService userConnectionService, IMessageService messageService, IChatService chatService, IBlockingService blockingService)
+        public ChatHub(IAccountService accountService, IChatMembersService chatMembersService, ILogger<ChatHub> logger, IUserConnectionService userConnectionService, IMessageService messageService, IChatService chatService, IBlockingService blockingService, IMessageStatusService messageStatusService)
         {
             _accountService = accountService;
             _chatMembersService = chatMembersService;
@@ -27,14 +28,15 @@ namespace MessagingPlatformAPI.SignalrConfig
             _messageService = messageService;
             _chatService = chatService;
             _blockingService = blockingService;
+            _messageStatusService = messageStatusService;
         }
-        public async Task SendMessage(string msg, Guid ChatId, List<IFormFile> files)
+        public async Task SendMessage(CreateMessageDTO model, List<IFormFile> files)
         {
-            var chat = await _chatService.GetById(ChatId);
+            var chat = await _chatService.GetById(model.ChatId);
             if (chat.chatType == Helpers.Enums.ChatType.prv)
             {
                 var SenderId = Context.UserIdentifier;
-                var mems = await _chatMembersService.GetAllByChatId(ChatId);
+                var mems = await _chatMembersService.GetAllByChatId(model.ChatId);
                 var RecivId = mems.Where(m => m.MemberId != SenderId).Select(m => m.MemberId).FirstOrDefault();
 
                 if (await _blockingService.IsBlocked(RecivId, SenderId)) return;
@@ -42,14 +44,17 @@ namespace MessagingPlatformAPI.SignalrConfig
             if (chat.chatType == Helpers.Enums.ChatType.grp)
             {
                 var SenderId = Context.UserIdentifier;
-                var mem = await _chatMembersService.GetByChatIdAndMemberId(ChatId,SenderId);
+                var mem = await _chatMembersService.GetByChatIdAndMemberId(model.ChatId,SenderId);
                 if (mem is null) return;
             }
-            //await Clients.Group(ChatId.ToString()).ReceiveMessage(user.UserName,msg);
+
             var userId = Context.UserIdentifier;
+            var res = await _messageService.Create(model, files);
+
+            //await Clients.Group(ChatId.ToString()).ReceiveMessage(user.UserName,msg);
             var user = await _accountService.FindById(userId);
-            await _messageService.Create(new CreateMessageDTO() { Content = msg, ChatId = ChatId, UserId = userId }, files);
-            await Clients.Group(ChatId.ToString()).SendAsync("ReceiveMessage", user.UserName, msg);
+            await _messageService.Create(new CreateMessageDTO() { Content = model.Content, ChatId = model.ChatId, UserId = userId }, files);
+            await Clients.Group(model.ChatId.ToString()).SendAsync("ReceiveMessage", user.UserName, model.Content);
             _logger.LogInformation("Sending message from user '{fname} {lname}' is succedded", user.FirstName, user.LastName);
         }
 

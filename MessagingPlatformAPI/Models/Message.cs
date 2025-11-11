@@ -9,6 +9,7 @@ namespace MessagingPlatformAPI.Models
         public string Content { get; set; }
         public DateTime CreatedDate { get; set; }
 
+        [DefaultValue(false)]
         public bool IsForward { get; set; }
 
         public DateTime? DeletedAt { get; set; } 
