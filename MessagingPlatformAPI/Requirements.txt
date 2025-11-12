@@ -11,7 +11,7 @@ Delivery Status --- done
 Message Reactions --- done
 
 2. Messaging Metadata
-ForwardedFrom --- XXX
+ForwardedFrom --- XXX ***
 Attachments --- done
 PinnedMessageId --- done (check solution)
 IsForwarded --- done
@@ -88,3 +88,5 @@ LoginHistory
 15. Mapping
 
 16. try&catch
+
+17. createMessage return message

@@ -1,4 +1,5 @@
 ﻿using MessagingPlatformAPI.Helpers.DTOs.MessageDTOs;
+using MessagingPlatformAPI.Helpers.DTOs.NotificationDTOs;
 using MessagingPlatformAPI.Helpers.DTOs.UserConnectionDTOs;
 using MessagingPlatformAPI.Helpers.Enums;
 using MessagingPlatformAPI.Models;
@@ -18,8 +19,13 @@ namespace MessagingPlatformAPI.SignalrConfig
         private readonly IChatMembersService _chatMembersService;
         private readonly IUserConnectionService _userConnectionService;
         private readonly IMessageStatusService _messageStatusService;
+        private readonly IPresenseTrackerService _presenseTrackerService;
+        private readonly INotificationService _notificationService;
         private readonly ILogger<ChatHub> _logger;
-        public ChatHub(IAccountService accountService, IChatMembersService chatMembersService, ILogger<ChatHub> logger, IUserConnectionService userConnectionService, IMessageService messageService, IChatService chatService, IBlockingService blockingService, IMessageStatusService messageStatusService)
+        public ChatHub
+            (IAccountService accountService, IChatMembersService chatMembersService, ILogger<ChatHub> logger, IUserConnectionService userConnectionService, 
+            IMessageService messageService, IChatService chatService, IBlockingService blockingService, IMessageStatusService messageStatusService, 
+            IPresenseTrackerService presenseTrackerService, INotificationService notificationService)
         {
             _accountService = accountService;
             _chatMembersService = chatMembersService;
@@ -29,6 +35,8 @@ namespace MessagingPlatformAPI.SignalrConfig
             _chatService = chatService;
             _blockingService = blockingService;
             _messageStatusService = messageStatusService;
+            _presenseTrackerService = presenseTrackerService;
+            _notificationService = notificationService;
         }
         public async Task SendMessage(CreateMessageDTO model, List<IFormFile> files)
         {
@@ -49,10 +57,28 @@ namespace MessagingPlatformAPI.SignalrConfig
             }
 
             var userId = Context.UserIdentifier;
-            var res = await _messageService.Create(model, files);
-
-            //await Clients.Group(ChatId.ToString()).ReceiveMessage(user.UserName,msg);
             var user = await _accountService.FindById(userId);
+            // ********************
+            await _messageService.Create(model, files);
+            if(await _presenseTrackerService.IsUserOnline(userId))
+            {
+                await Clients.Group(model.ChatId.ToString()).SendAsync("ReceiveMssage", 
+                    new { SenderPhoneNumber = user.PhoneNumber, Message=model.Content, ChatId = model.ChatId, MessageStatus = MessageStatusEnum.delivered, CreatedAt=DateTime.UtcNow });
+                // create message status 
+            }
+            else
+            {
+                // FCM
+                var ChatMembers = await _chatMembersService.GetAllByChatId(model.ChatId);
+                var pushNotf = new CreatePushNotificationDTO() { Content = model.Content , Title="New Message"};
+                foreach (var member in ChatMembers)
+                {
+                    var resp = await _notificationService.PushNotification(member.MemberId, pushNotf);
+                    if (resp) // create message status
+                }
+            }
+            // *******************
+            //await Clients.Group(ChatId.ToString()).ReceiveMessage(user.UserName,msg);
             await _messageService.Create(new CreateMessageDTO() { Content = model.Content, ChatId = model.ChatId, UserId = userId }, files);
             await Clients.Group(model.ChatId.ToString()).SendAsync("ReceiveMessage", user.UserName, model.Content);
             _logger.LogInformation("Sending message from user '{fname} {lname}' is succedded", user.FirstName, user.LastName);
@@ -123,11 +149,15 @@ namespace MessagingPlatformAPI.SignalrConfig
         public override async Task OnConnectedAsync()
         {
             var UserId = Context.UserIdentifier;
+            await _presenseTrackerService.UserConnectedAsync(UserId, Context.ConnectionId);
+
+
             var user = await _accountService.FindById(UserId);
-            user.IsOnline = true;
+            /*user.IsOnline = true;
             await _accountService.SaveChangesAsync(user);
 
             await _userConnectionService.Create(new CreateUserConnectionDTO() { UserId = UserId ,ConnectionId = Context.ConnectionId });
+            */
 
             var UnSeenMessages = await _messageService.GetAllAfterDatetime(user.LastSeen);
             foreach(var msg in UnSeenMessages)
@@ -150,12 +180,18 @@ namespace MessagingPlatformAPI.SignalrConfig
 
             var UserId = Context.UserIdentifier;
             var user = await _accountService.FindById(UserId);
-            if (!user.UserConnections.Any())  // if the user dont open the app in another device
+            /*if (!user.UserConnections.Any())  // if the user dont open the app in another device
             {
                 user.IsOnline = false;
                 user.LastSeen = DateTime.UtcNow;
                 await _accountService.SaveChangesAsync(user);
-            }
+            }*/
+
+            await _presenseTrackerService.UserDisconnectedAsync(UserId, Context.ConnectionId);
+            bool isStillOnline = await _presenseTrackerService.IsUserOnline(UserId);
+            if (!isStillOnline)
+                await Clients.Others.SendAsync("UserIsOffline", UserId);
+
             // if user open the app in another device, he is still online
             await base.OnDisconnectedAsync(exception);
         }

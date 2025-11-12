@@ -24,5 +24,9 @@ namespace MessagingPlatformAPI.Services.Implementation
             await _base.Create(token);
             return new SimpleResponseDTO() { IsSuccess=true };
         }
+        public async Task DeleteAsync(DeviceToken token)
+        {
+            await _base.Remove(token);
+        }
     }
 }

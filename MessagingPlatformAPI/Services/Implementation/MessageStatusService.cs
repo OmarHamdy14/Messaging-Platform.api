@@ -18,5 +18,9 @@ namespace MessagingPlatformAPI.Services.Implementation
         {
             return await _base.GetAll(c => c.MessageId == MessageId);
         }
+        public async Task CreateStatus(MessageStatus msgSt)
+        {
+            await _base.Create(msgSt); 
+        }
     }
 }

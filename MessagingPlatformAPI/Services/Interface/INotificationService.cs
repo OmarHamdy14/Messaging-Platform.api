@@ -4,6 +4,6 @@ namespace MessagingPlatformAPI.Services.Interface
 {
     public interface INotificationService
     {
-        Task PushNotification(string UserId, CreatePushNotificationDTO model);
+        Task<bool> PushNotification(string UserId, CreatePushNotificationDTO model);
     }
 }
