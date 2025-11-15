@@ -122,7 +122,7 @@ namespace MessagingPlatformAPI.Services.Implementation
         {
             await _userManager.UpdateAsync(user);
         }
-        public async Task<SimpleResponseDTO> ChangeProfilePic(ApplicationUser User, IFormFile pic)
+        public async Task<SimpleResponseDTO<ProfileImage>> ChangeProfilePic(ApplicationUser User, IFormFile pic)
         {
             var currentPic = await _profileImageBase.Get(p => p.UserId == User.Id);
             if (currentPic != null)
@@ -134,20 +134,20 @@ namespace MessagingPlatformAPI.Services.Implementation
             if (cloudinaryRes.IsSuccess)
             {
                 await _profileImageBase.Create(new ProfileImage() { PublicId = cloudinaryRes.PublicId, Url = cloudinaryRes.Url, UserId = User.Id });
-                return new SimpleResponseDTO() { IsSuccess = true, Message = "Changing profile pidture is done" };
+                return new SimpleResponseDTO<ProfileImage>() { IsSuccess = true, Message = "Changing profile pidture is done" };
             }
-            return new SimpleResponseDTO() { IsSuccess = false };
+            return new SimpleResponseDTO<ProfileImage>() { IsSuccess = false };
         }
-        public async Task<SimpleResponseDTO> DeleteProfilePic(string ImagePublicId)
+        public async Task<SimpleResponseDTO<ProfileImage>> DeleteProfilePic(string ImagePublicId)
         {
             var currentPic = await _profileImageBase.Get(p => p.PublicId == ImagePublicId);
             if (currentPic != null)
             {
                 await _cloudinaryService.DeleteFile(ImagePublicId);
                 await _profileImageBase.Remove(currentPic);
-                return new SimpleResponseDTO() { IsSuccess = true, Message = "Deletion is done" };
+                return new SimpleResponseDTO<ProfileImage>() { IsSuccess = true, Message = "Deletion is done" };
             }
-            return new SimpleResponseDTO() { IsSuccess = false, Message = "Deletion is failed" };
+            return new SimpleResponseDTO<ProfileImage>() { IsSuccess = false, Message = "Deletion is failed" };
         }
 
 

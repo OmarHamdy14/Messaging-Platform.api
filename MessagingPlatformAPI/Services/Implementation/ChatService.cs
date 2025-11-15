@@ -24,7 +24,7 @@ namespace MessagingPlatformAPI.Services.Implementation
         {
             return await _base.Get(c => c.Id == Id, "Messages,Members");
         }
-        public async Task<SimpleResponseDTO> Create(CerateChatDTO model)
+        public async Task<SimpleResponseDTO<Chat>> Create(CerateChatDTO model)
         {
             var chat = _mapper.Map<Chat>(model);
             List<Chat_Member> members = new List<Chat_Member>();
@@ -34,36 +34,36 @@ namespace MessagingPlatformAPI.Services.Implementation
             }
             chat.Members = members;
             await _base.Create(chat);
-            return new SimpleResponseDTO() { IsSuccess = true, Message = "Chat creation is done" };
+            return new SimpleResponseDTO<Chat>() { IsSuccess = true, Message = "Chat creation is done" };
         }
-        public async Task<SimpleResponseDTO> Update(Guid ChaId, UpdateChatDTO model)
+        public async Task<SimpleResponseDTO<Chat>> Update(Guid ChaId, UpdateChatDTO model)
         {
             var chat = await _base.Get(c => c.Id == ChaId);
-            if (chat == null) return new SimpleResponseDTO() { IsSuccess = false, Message = "Chat is not found" };
+            if (chat == null) return new SimpleResponseDTO<Chat>() { IsSuccess = false, Message = "Chat is not found" };
             _mapper.Map(chat, model);
             await _base.Update(chat);
-            return new SimpleResponseDTO() { IsSuccess = true, Message = "Chat update is done" };
+            return new SimpleResponseDTO<Chat>() { IsSuccess = true, Message = "Chat update is done" };
         }
-        public async Task<SimpleResponseDTO> AddUserToChat(Guid ChatId, string UserId)
+        public async Task<SimpleResponseDTO<Chat>> AddUserToChat(Guid ChatId, string UserId)
         {
             var member = new Chat_Member() { ChatId = ChatId, MemberId = UserId };
             var chat = await _base.Get(c => c.Id == ChatId);
             chat.Members.Add(member);
-            return new SimpleResponseDTO() { IsSuccess=true, Message="Adding is succedded" };
+            return new SimpleResponseDTO<Chat>() { IsSuccess=true, Message="Adding is succedded" };
         }
-        public async Task<SimpleResponseDTO> Delete(Guid ChaId)
+        public async Task<SimpleResponseDTO<Chat>> Delete(Guid ChaId)
         {
             var chat = await _base.Get(c => c.Id == ChaId);
-            if (chat == null) return new SimpleResponseDTO() { IsSuccess = false, Message = "Chat is not found" };
+            if (chat == null) return new SimpleResponseDTO<Chat>() { IsSuccess = false, Message = "Chat is not found" };
             await _base.Remove(chat);
-            return new SimpleResponseDTO() { IsSuccess = true, Message = "Chat deletion is done" };
+            return new SimpleResponseDTO<Chat>() { IsSuccess = true, Message = "Chat deletion is done" };
         }
-        public async Task<SimpleResponseDTO> LeaveGroupChat(Guid ChatId)
+        public async Task<SimpleResponseDTO<Chat>> LeaveGroupChat(Guid ChatId)  // ???????
         {
             var chat = await _base.Get(c => c.Id == ChatId);
-            if (chat == null) return new SimpleResponseDTO() { IsSuccess = false, Message = "Chat is not found" };
+            if (chat == null) return new SimpleResponseDTO<Chat>() { IsSuccess = false, Message = "Chat is not found" };
             chat.IsLeft = true;
-            return new SimpleResponseDTO() { IsSuccess = true, Message = "Now .. you are not a member of this chat" };
+            return new SimpleResponseDTO<Chat>() { IsSuccess = true, Message = "Now .. you are not a member of this chat" };
         }
 
         public async Task SaveChanges(Chat c)

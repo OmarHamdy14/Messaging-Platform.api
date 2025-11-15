@@ -14,13 +14,13 @@ namespace MessagingPlatformAPI.Services.Implementation
         {
             _base = @base;
         }
-        public async Task<SimpleResponseDTO> MakeAdmin(RecordDTO model)
+        public async Task<SimpleResponseDTO<Chat_Member>> MakeAdmin(RecordDTO model)
         {
             var member = await _base.Get(cm => cm.MemberId==model.MemberId && cm.ChatId == model.ChatId);
-            if(member == null) return new SimpleResponseDTO() { IsSuccess = false, Message = $"Failed !!! This record: MemberId={model.MemberId} & ChatId={model.ChatId} is not found"};
+            if(member == null) return new SimpleResponseDTO<Chat_Member>() { IsSuccess = false, Message = $"Failed !!! This record: MemberId={model.MemberId} & ChatId={model.ChatId} is not found"};
             member.IsAdmin = true;
             await _base.Update(member);
-            return new SimpleResponseDTO() { IsSuccess = true, Message = $"Succeeded !!! Making This record: MemberId={model.MemberId} & ChatId={model.ChatId} as a admin is done" };
+            return new SimpleResponseDTO<Chat_Member>() { IsSuccess = true, Message = $"Succeeded !!! Making This record: MemberId={model.MemberId} & ChatId={model.ChatId} as a admin is done" };
         }
         public async Task<Chat_Member> GetByChatIdAndMemberId(Guid chatId, string memberId)
         {
@@ -34,12 +34,12 @@ namespace MessagingPlatformAPI.Services.Implementation
         {
             return await _base.GetAll(c => c.ChatId == ChatId);
         }
-        public async Task<SimpleResponseDTO> Delete(RecordDTO model)
+        public async Task<SimpleResponseDTO<Chat_Member>> Delete(RecordDTO model)
         {
             var member = await _base.Get(c => c.ChatId == model.ChatId && c.MemberId == model.MemberId);
-            if (member == null) return new SimpleResponseDTO() { IsSuccess = false, Message = $"Failed !!! This record: MemberId={model.MemberId} & ChatId={model.ChatId} is not found" };
+            if (member == null) return new SimpleResponseDTO<Chat_Member>() { IsSuccess = false, Message = $"Failed !!! This record: MemberId={model.MemberId} & ChatId={model.ChatId} is not found" };
             await _base.Remove(member);
-            return new SimpleResponseDTO() { IsSuccess = true, Message = "Deletion is succedded" };
+            return new SimpleResponseDTO<Chat_Member>() { IsSuccess = true, Message = "Deletion is succedded" };
         }
     }
 }

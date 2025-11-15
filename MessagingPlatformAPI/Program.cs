@@ -108,6 +108,9 @@ namespace MessagingPlatformAPI
             app.UseAuthentication();
             app.UseAuthorization();
 
+
+            app.UseExceptionHandler("api/Error/error");
+
             app.MapControllers();
 
             app.Run();

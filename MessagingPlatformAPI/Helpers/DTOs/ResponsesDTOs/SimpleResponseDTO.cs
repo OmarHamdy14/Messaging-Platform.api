@@ -1,9 +1,10 @@
 ﻿namespace MessagingPlatformAPI.Helpers.DTOs.ResponsesDTOs
 {
-    public class SimpleResponseDTO
+    public class SimpleResponseDTO<T>
     {
         public bool IsSuccess { get; set; }
         public string? Message { get; set; }
+        public T? Object { get; set; }
     }
 }
 /*

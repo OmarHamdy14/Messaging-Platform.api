@@ -83,10 +83,14 @@ LoginHistory
 
 13. LastSennPrivacy: friends except { .... } --- X
 
-14. delivered status after use FCM
+14. delivered status after use FCM --- done
 
-15. Mapping
+15. Mapping --- done
 
-16. try&catch
+16. try&catch --- done
 
 17. createMessage return message
+
+18. Unit testing
+
+19. real-time reactions
