@@ -9,7 +9,7 @@ namespace MessagingPlatformAPI.Services.Interface
         Task<Chat_Member> GetByChatIdAndMemberId(Guid chatId, string memberId);
         Task<List<Chat_Member>> GetAllByUserId(string UserId);
         Task<List<Chat_Member>> GetAllByChatId(Guid ChatId);
-        Task<SimpleResponseDTO> MakeAdmin(RecordDTO model);
-        Task<SimpleResponseDTO> Delete(RecordDTO model);
+        Task<SimpleResponseDTO<Chat_Member>> MakeAdmin(RecordDTO model);
+        Task<SimpleResponseDTO<Chat_Member>> Delete(RecordDTO model);
     }
 }

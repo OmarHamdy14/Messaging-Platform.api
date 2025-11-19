@@ -48,10 +48,10 @@ Admins --- done (check solution)
 Members --- done
 
 5. Notification & Device
-DeviceId
-Platform
-PushToken
-IsActiveSession
+DeviceId --- done
+Platform --- done
+PushToken --- done
+IsActiveSession 
 LastSyncTime
 
 6. Security & Privacy
@@ -89,8 +89,18 @@ LoginHistory
 
 16. try&catch --- done
 
-17. createMessage return message
+17. createMessage return message --- done
 
 18. Unit testing
 
-19. real-time reactions
+19. real-time reactions --- done
+
+20. RefreshToken
+
+
+RefreshToken
+LastSennPrivacy: friends except { .... }
+Caching
+LastSeenPrivacy 
+ReadReceiptsEnabled 
+UserSettings

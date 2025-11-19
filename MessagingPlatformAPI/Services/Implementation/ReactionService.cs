@@ -26,26 +26,26 @@ namespace MessagingPlatformAPI.Services.Implementation
         {
             return await _base.GetAll(c => c.MessageId == MessageId);
         }
-        public async Task<SimpleResponseDTO> Create(CreateReactionDTO model)
+        public async Task<SimpleResponseDTO<Reaction>> Create(CreateReactionDTO model)
         {
             var reac = _mapper.Map<Reaction>(model);
             await _base.Create(reac);
-            return new SimpleResponseDTO() { IsSuccess = true, Message = "Reaction creation is done" };
+            return new SimpleResponseDTO<Reaction>() { IsSuccess = true, Message = "Reaction creation is done", Object=reac };
         }
-        public async Task<SimpleResponseDTO> Update(Guid ChaId, UpdateReactionDTO model)
+        public async Task<SimpleResponseDTO<Reaction>> Update(Guid ChaId, UpdateReactionDTO model)
         {
             var reac = await _base.Get(c => c.Id == ChaId);
-            if (reac == null) return new SimpleResponseDTO() { IsSuccess = false, Message = "reaction is not found" };
+            if (reac == null) return new SimpleResponseDTO<Reaction>() { IsSuccess = false, Message = "reaction is not found" };
             _mapper.Map(reac, model);
             await _base.Update(reac);
-            return new SimpleResponseDTO() { IsSuccess = true, Message = "Reaction update is done" };
+            return new SimpleResponseDTO<Reaction>() { IsSuccess = true, Message = "Reaction update is done", Object = reac };
         }
-        public async Task<SimpleResponseDTO> Delete(Guid ReactionId)
+        public async Task<SimpleResponseDTO<Reaction>> Delete(Guid ReactionId)
         {
             var reac = await _base.Get(c => c.Id == ReactionId);
-            if (reac == null) return new SimpleResponseDTO() { IsSuccess = false, Message = "Reaction is not found" };
+            if (reac == null) return new SimpleResponseDTO<Reaction>() { IsSuccess = false, Message = "Reaction is not found" };
             await _base.Remove(reac);
-            return new SimpleResponseDTO() { IsSuccess = true, Message = "Reaction deletion is done" };
+            return new SimpleResponseDTO<Reaction>() { IsSuccess = true, Message = "Reaction deletion is done", Object = reac };
         }
     }
 }

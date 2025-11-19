@@ -20,17 +20,18 @@ namespace MessagingPlatformAPI.Services.Implementation
         {
             return await _base.Get(s => s.UserId == UserId);
         }
-        public async Task<SimpleResponseDTO> Create(string UserId)
+        public async Task<SimpleResponseDTO<UserSettings>> Create(string UserId)
         {
-            await _base.Create(new UserSettings() { UserId = UserId });
-            return new SimpleResponseDTO() { IsSuccess = true };
+            var userSettings = new UserSettings() { UserId = UserId };
+            await _base.Create(userSettings);
+            return new SimpleResponseDTO<UserSettings>() { IsSuccess = true, Object=userSettings };
         } 
-        public async Task<SimpleResponseDTO> Update(Guid SettingsId, UpdateUserSettingsDTO model)
+        public async Task<SimpleResponseDTO<UserSettings>> Update(Guid SettingsId, UpdateUserSettingsDTO model)
         {
             var settings = await _base.Get(s => s.Id == SettingsId);
             _mapper.Map(settings, model);
             await _base.Update(settings);
-            return new SimpleResponseDTO() { IsSuccess=true };
+            return new SimpleResponseDTO<UserSettings>() { IsSuccess=true, Object=settings };
         }
     }
 }

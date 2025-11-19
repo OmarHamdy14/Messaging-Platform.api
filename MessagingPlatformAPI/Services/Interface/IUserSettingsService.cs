@@ -7,7 +7,7 @@ namespace MessagingPlatformAPI.Services.Interface
     public interface IUserSettingsService
     {
         Task<UserSettings> GetById(string UserId);
-        Task<SimpleResponseDTO> Create(string UserId);
-        Task<SimpleResponseDTO> Update(Guid SettingsId, UpdateUserSettingsDTO model);
+        Task<SimpleResponseDTO<UserSettings>> Create(string UserId);
+        Task<SimpleResponseDTO<UserSettings>> Update(Guid SettingsId, UpdateUserSettingsDTO model);
     }
 }

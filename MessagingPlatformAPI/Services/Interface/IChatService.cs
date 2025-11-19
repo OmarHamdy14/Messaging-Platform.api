@@ -7,13 +7,13 @@ namespace MessagingPlatformAPI.Services.Interface
     public interface IChatService
     {
         Task<Chat> GetById(Guid Id);
-        Task<SimpleResponseDTO> Create(CerateChatDTO model);
-        Task<SimpleResponseDTO> Update(Guid ChaId, UpdateChatDTO model);
-        Task<SimpleResponseDTO> Delete(Guid ChaId);
+        Task<SimpleResponseDTO<Chat>> Create(CerateChatDTO model);
+        Task<SimpleResponseDTO<Chat>> Update(Guid ChaId, UpdateChatDTO model);
+        Task<SimpleResponseDTO<Chat>> Delete(Guid ChaId);
 
-        Task<SimpleResponseDTO> LeaveGroupChat(Guid ChatId);
+        Task<SimpleResponseDTO<Chat>> LeaveGroupChat(Guid ChatId);
         Task SaveChanges(Chat c);
-        Task<SimpleResponseDTO> ChangeChatPic(Chat chat, IFormFile pic);
-        Task<SimpleResponseDTO> DeleteChatPic(string ImagePublicId);
+        Task<SimpleResponseDTO<Chat>> ChangeChatPic(Chat chat, IFormFile pic);
+        Task<SimpleResponseDTO<Chat>> DeleteChatPic(string ImagePublicId);
     }
 }

@@ -8,8 +8,8 @@ namespace MessagingPlatformAPI.Services.Interface
     {
         Task<Reaction> GetById(Guid Id);
         Task<List<Reaction>> GetAllByMessageId(Guid MessageId);
-        Task<SimpleResponseDTO> Create(CreateReactionDTO model);
-        Task<SimpleResponseDTO> Update(Guid ChaId, UpdateReactionDTO model);
-        Task<SimpleResponseDTO> Delete(Guid ReactionId);
+        Task<SimpleResponseDTO<Reaction>> Create(CreateReactionDTO model);
+        Task<SimpleResponseDTO<Reaction>> Update(Guid ChaId, UpdateReactionDTO model);
+        Task<SimpleResponseDTO<Reaction>> Delete(Guid ReactionId);
     }
 }

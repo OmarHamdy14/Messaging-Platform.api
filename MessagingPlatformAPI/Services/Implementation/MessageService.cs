@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using FirebaseAdmin.Messaging;
 using MessagingPlatformAPI.Base.Interface;
 using MessagingPlatformAPI.Helpers.DTOs.MessageDTOs;
 using MessagingPlatformAPI.Helpers.DTOs.ResponsesDTOs;
@@ -6,6 +7,7 @@ using MessagingPlatformAPI.Helpers.Enums;
 using MessagingPlatformAPI.Models;
 using MessagingPlatformAPI.Services.Interface;
 using Microsoft.AspNetCore.SignalR;
+using Message = MessagingPlatformAPI.Models.Message;
 
 namespace MessagingPlatformAPI.Services.Implementation
 {
@@ -52,12 +54,12 @@ namespace MessagingPlatformAPI.Services.Implementation
         {
             return await _base.GetAll(p => p.GroupChatId == GroupChatId);
         }*/
-        public async Task<SimpleResponseDTO> Create(CreateMessageDTO model, List<IFormFile> files)
+        public async Task<SimpleResponseDTO<Message>> Create(CreateMessageDTO model, List<IFormFile> files)
         {
             var message = _mapper.Map<Message>(model);
             var chat = await _chatService.GetById(model.ChatId);
             var res = await _cloudinaryService.UploadFiles(files);
-            if (!res.AllSucceeded) return new SimpleResponseDTO() { IsSuccess = false };
+            if (!res.AllSucceeded) return new SimpleResponseDTO<Message>() { IsSuccess = false };
             await _base.Create(message);
             foreach (var response in res.UploadedPhotos)
             {
@@ -75,37 +77,37 @@ namespace MessagingPlatformAPI.Services.Implementation
                     UpdatedAt = DateTime.Now
                 });
             }
-            return new SimpleResponseDTO() { IsSuccess = true, Message = "Message creation is done" };
+            return new SimpleResponseDTO<Message>() { IsSuccess = true, Message = "Message creation is done", Object=message };
         }
-        public async Task<SimpleResponseDTO> Update(Guid MessageId, UpdateMessageDTO model)
+        public async Task<SimpleResponseDTO<Message>> Update(Guid MessageId, UpdateMessageDTO model)
         {
             var message = await _base.Get(c => c.Id == MessageId);
-            if (message == null) return new SimpleResponseDTO() { IsSuccess = false, Message = "Message is not found" };
+            if (message == null) return new SimpleResponseDTO<Message>() { IsSuccess = false, Message = "Message is not found" };
             _mapper.Map(message, model);
             message.EditedAt = DateTime.UtcNow;
             message.IsEdited = true;
             await _base.Update(message);
-            return new SimpleResponseDTO() { IsSuccess = true, Message = "Message Update is done" };
+            return new SimpleResponseDTO<Message>() { IsSuccess = true, Message = "Message Update is done", Object = message };
         }
-        public async Task<SimpleResponseDTO> Delete(Guid MessageId)
+        public async Task<SimpleResponseDTO<Message>> Delete(Guid MessageId)
         {
             var message = await _base.Get(c => c.Id == MessageId);
-            if (message == null) return new SimpleResponseDTO() { IsSuccess = false, Message = "Message is not found" };
+            if (message == null) return new SimpleResponseDTO<Message>() { IsSuccess = false, Message = "Message is not found" };
             message.DeletedAt = DateTime.UtcNow;
             message.IsDeleted = true;
             await _base.Update(message);
-            return new SimpleResponseDTO() { IsSuccess = true, Message = "Message deletion is done" };
+            return new SimpleResponseDTO<Message>() { IsSuccess = true, Message = "Message deletion is done", Object = message };
         }
-        public async Task<SimpleResponseDTO> DeleteMessagePic(string ImagePublicId)
+        public async Task<SimpleResponseDTO<MessageImage>> DeleteMessagePic(string ImagePublicId)
         {
             var currentPic = await _messageImageBase.Get(p => p.PublicId == ImagePublicId);
             if (currentPic != null)
             {
                 await _cloudinaryService.DeleteFile(ImagePublicId);
                 await _messageImageBase.Remove(currentPic);
-                return new SimpleResponseDTO() { IsSuccess = true, Message = "Deletion is done" };
+                return new SimpleResponseDTO<MessageImage>() { IsSuccess = true, Message = "Deletion is done", Object = currentPic };
             }
-            return new SimpleResponseDTO() { IsSuccess = false, Message = "Deletion is failed" };
+            return new SimpleResponseDTO<MessageImage>() { IsSuccess = false, Message = "Deletion is failed" };
         }
     }
 }

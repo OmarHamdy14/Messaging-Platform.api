@@ -9,7 +9,7 @@ namespace MessagingPlatformAPI.Services.Interface
         Task<BlockedUser> GetByRecordId(Guid recId);
         Task<BlockedUser> GetByBlockerIdAndBlodkedId(string blockerId, string blockedId);
         Task<List<BlockedUser>> GetAllByBlockerId(string blockerId);
-        Task<SimpleResponseDTO> Create(string blockerId, string blockedId);
-        Task<SimpleResponseDTO> Delete(Guid recId);
+        Task<SimpleResponseDTO<BlockedUser>> Create(string blockerId, string blockedId);
+        Task<SimpleResponseDTO<BlockedUser>> Delete(Guid recId);
     }
 }

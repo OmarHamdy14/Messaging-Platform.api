@@ -1,5 +1,7 @@
-﻿using MessagingPlatformAPI.Helpers.DTOs.MessageDTOs;
+﻿using FirebaseAdmin.Messaging;
+using MessagingPlatformAPI.Helpers.DTOs.MessageDTOs;
 using MessagingPlatformAPI.Helpers.DTOs.NotificationDTOs;
+using MessagingPlatformAPI.Helpers.DTOs.ReactionDTOs;
 using MessagingPlatformAPI.Helpers.DTOs.UserConnectionDTOs;
 using MessagingPlatformAPI.Helpers.Enums;
 using MessagingPlatformAPI.Models;
@@ -21,11 +23,12 @@ namespace MessagingPlatformAPI.SignalrConfig
         private readonly IMessageStatusService _messageStatusService;
         private readonly IPresenseTrackerService _presenseTrackerService;
         private readonly INotificationService _notificationService;
+        private readonly IReactionService _reactionService;
         private readonly ILogger<ChatHub> _logger;
         public ChatHub
             (IAccountService accountService, IChatMembersService chatMembersService, ILogger<ChatHub> logger, IUserConnectionService userConnectionService, 
             IMessageService messageService, IChatService chatService, IBlockingService blockingService, IMessageStatusService messageStatusService, 
-            IPresenseTrackerService presenseTrackerService, INotificationService notificationService)
+            IPresenseTrackerService presenseTrackerService, INotificationService notificationService, IReactionService reactionService)
         {
             _accountService = accountService;
             _chatMembersService = chatMembersService;
@@ -37,6 +40,7 @@ namespace MessagingPlatformAPI.SignalrConfig
             _messageStatusService = messageStatusService;
             _presenseTrackerService = presenseTrackerService;
             _notificationService = notificationService;
+            _reactionService = reactionService;
         }
         public async Task SendMessage(CreateMessageDTO model, List<IFormFile> files)
         {
@@ -49,7 +53,7 @@ namespace MessagingPlatformAPI.SignalrConfig
 
                 if (await _blockingService.IsBlocked(RecivId, SenderId)) return;
             }
-            if (chat.chatType == Helpers.Enums.ChatType.grp)
+            else if (chat.chatType == Helpers.Enums.ChatType.grp)
             {
                 var SenderId = Context.UserIdentifier;
                 var mem = await _chatMembersService.GetByChatIdAndMemberId(model.ChatId,SenderId);
@@ -58,32 +62,47 @@ namespace MessagingPlatformAPI.SignalrConfig
 
             var userId = Context.UserIdentifier;
             var user = await _accountService.FindById(userId);
+            
+            
             // ********************
-            await _messageService.Create(model, files);
-            if(await _presenseTrackerService.IsUserOnline(userId))
+            var res = await _messageService.Create(model, files);
+            if (!res.IsSuccess) return;
+            var message = res.Object;
+            var chatMembers = await _chatMembersService.GetAllByChatId(model.ChatId); // all chat members
+            foreach(var chatMember in chatMembers)
             {
-                await Clients.Group(model.ChatId.ToString()).SendAsync("ReceiveMssage", 
-                    new { SenderPhoneNumber = user.PhoneNumber, Message=model.Content, ChatId = model.ChatId, MessageStatus = MessageStatusEnum.delivered, CreatedAt=DateTime.UtcNow });
-                // create message status 
-            }
-            else
-            {
-                // FCM
-                var ChatMembers = await _chatMembersService.GetAllByChatId(model.ChatId);
-                var pushNotf = new CreatePushNotificationDTO() { Content = model.Content , Title="New Message"};
-                foreach (var member in ChatMembers)
+                if (chatMember.MemberId == Context.UserIdentifier) continue; 
+
+                var recipient = await _accountService.FindById(chatMember.MemberId);
+                if(await _presenseTrackerService.IsUserOnline(chatMember.MemberId))
                 {
-                    var resp = await _notificationService.PushNotification(member.MemberId, pushNotf);
-                    if (resp) // create message status
+                    await Clients.Group(model.ChatId.ToString()).SendAsync("ReceiveMssage", 
+                        new { SenderPhoneNumber = recipient.PhoneNumber, Message=model.Content, ChatId = model.ChatId, MessageStatus = MessageStatusEnum.delivered, CreatedAt=DateTime.UtcNow });
+                    // create message status 
+                    message.messageStatuses.Add(new MessageStatus() { MessageId=message.Id, RecieverId=chatMember.MemberId, status=MessageStatusEnum.delivered, UpdatedAt=DateTime.UtcNow});
+                }
+                else
+                {
+                    // FCM
+                    var pushNotf = new CreatePushNotificationDTO() { Content = model.Content , Title="New Message"};
+                    var resp = await _notificationService.PushNotification(chatMember.MemberId, pushNotf);
+                    if (resp) message.messageStatuses.Add(new MessageStatus() { MessageId = message.Id, RecieverId = chatMember.MemberId, status = MessageStatusEnum.sent, UpdatedAt = DateTime.UtcNow });
                 }
             }
             // *******************
+            
+            
             //await Clients.Group(ChatId.ToString()).ReceiveMessage(user.UserName,msg);
             await _messageService.Create(new CreateMessageDTO() { Content = model.Content, ChatId = model.ChatId, UserId = userId }, files);
             await Clients.Group(model.ChatId.ToString()).SendAsync("ReceiveMessage", user.UserName, model.Content);
             _logger.LogInformation("Sending message from user '{fname} {lname}' is succedded", user.FirstName, user.LastName);
         }
-
+        public async Task DeleteMessage(Guid MessageId, bool IsForEveryone)
+        {
+            var message = await _messageService.GetById(MessageId);
+            var UserId = Context.UserIdentifier;
+            await Clients.Group(message.ChatId.ToString()).SendAsync("DeleteMessage", new { MessageId, UserId, IsForEveryone });
+        }
 
         public async Task AddUserToGroup(Guid GroupId)
         {
@@ -93,6 +112,40 @@ namespace MessagingPlatformAPI.SignalrConfig
         {
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupId.ToString());
         }
+
+
+
+        public async Task SendReaction(Guid MessageId, string reactType)
+        {
+            var message = await _messageService.GetById(MessageId);
+            var chat = await _chatService.GetById(message.ChatId);
+            if (chat.chatType == Helpers.Enums.ChatType.prv)
+            {
+                var SenderId = Context.UserIdentifier;
+                var mems = await _chatMembersService.GetAllByChatId(message.ChatId);
+                var RecivId = mems.Where(m => m.MemberId != SenderId).Select(m => m.MemberId).FirstOrDefault();
+
+                if (await _blockingService.IsBlocked(RecivId, SenderId)) return;
+            }
+            else if (chat.chatType == Helpers.Enums.ChatType.grp)
+            {
+                var SenderId = Context.UserIdentifier;
+                var mem = await _chatMembersService.GetByChatIdAndMemberId(message.ChatId, SenderId);
+                if (mem is null) return;
+            }
+            var UserId = Context.UserIdentifier;
+            await _reactionService.Create(new CreateReactionDTO() { ReacterId=UserId, MessageId=MessageId});
+            await Clients.Group(message.ChatId.ToString()).SendAsync("ReceiveReaction", new {MessageId, UserId, reactType });
+        }
+        public async Task DeleteReaction(Guid MessageId, Guid ReactionId)
+        {
+            var message = await _messageService.GetById(MessageId);
+            var UserId = Context.UserIdentifier;
+            await _reactionService.Delete(ReactionId);
+            await Clients.Group(message.ChatId.ToString()).SendAsync("DeleteReaction", new { MessageId, UserId, ReactionId });
+        }
+
+
 
 
 

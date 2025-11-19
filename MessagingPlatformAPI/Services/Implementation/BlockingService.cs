@@ -34,14 +34,15 @@ namespace MessagingPlatformAPI.Services.Implementation
         public async Task<SimpleResponseDTO<BlockedUser>> Create(string blockerId, string blockedId)
         {
             // do i have ti use try&catch here, ot using it in controller is enough ???
-            await _base.Create(new BlockedUser() { BlockerId = blockerId, BlockedId = blockedId, CreatedAt = DateTime.UtcNow });
-            return new SimpleResponseDTO<BlockedUser>() { IsSuccess = true, Message = "Creation id done" };
+            var blockedUsr = new BlockedUser() { BlockerId = blockerId, BlockedId = blockedId, CreatedAt = DateTime.UtcNow };
+            await _base.Create(blockedUsr);
+            return new SimpleResponseDTO<BlockedUser>() { IsSuccess = true, Message = "Creation id done", Object= blockedUsr };
         }
         public async Task<SimpleResponseDTO<BlockedUser>> Delete(Guid recId)
         {
             var rec = await GetByRecordId(recId);
             await _base.Remove(rec);
-            return new SimpleResponseDTO<BlockedUser>() { IsSuccess = true, Message = "Deletion id done" };
+            return new SimpleResponseDTO<BlockedUser>() { IsSuccess = true, Message = "Deletion id done", Object=rec };
         }
     }
 }

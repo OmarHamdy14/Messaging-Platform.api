@@ -34,7 +34,7 @@ namespace MessagingPlatformAPI.Services.Implementation
             }
             chat.Members = members;
             await _base.Create(chat);
-            return new SimpleResponseDTO<Chat>() { IsSuccess = true, Message = "Chat creation is done" };
+            return new SimpleResponseDTO<Chat>() { IsSuccess = true, Message = "Chat creation is done", Object=chat };
         }
         public async Task<SimpleResponseDTO<Chat>> Update(Guid ChaId, UpdateChatDTO model)
         {
@@ -42,21 +42,21 @@ namespace MessagingPlatformAPI.Services.Implementation
             if (chat == null) return new SimpleResponseDTO<Chat>() { IsSuccess = false, Message = "Chat is not found" };
             _mapper.Map(chat, model);
             await _base.Update(chat);
-            return new SimpleResponseDTO<Chat>() { IsSuccess = true, Message = "Chat update is done" };
+            return new SimpleResponseDTO<Chat>() { IsSuccess = true, Message = "Chat update is done", Object = chat };
         }
         public async Task<SimpleResponseDTO<Chat>> AddUserToChat(Guid ChatId, string UserId)
         {
             var member = new Chat_Member() { ChatId = ChatId, MemberId = UserId };
             var chat = await _base.Get(c => c.Id == ChatId);
             chat.Members.Add(member);
-            return new SimpleResponseDTO<Chat>() { IsSuccess=true, Message="Adding is succedded" };
+            return new SimpleResponseDTO<Chat>() { IsSuccess=true, Message="Adding is succedded", Object = chat };
         }
         public async Task<SimpleResponseDTO<Chat>> Delete(Guid ChaId)
         {
             var chat = await _base.Get(c => c.Id == ChaId);
             if (chat == null) return new SimpleResponseDTO<Chat>() { IsSuccess = false, Message = "Chat is not found" };
             await _base.Remove(chat);
-            return new SimpleResponseDTO<Chat>() { IsSuccess = true, Message = "Chat deletion is done" };
+            return new SimpleResponseDTO<Chat>() { IsSuccess = true, Message = "Chat deletion is done", Object = chat };
         }
         public async Task<SimpleResponseDTO<Chat>> LeaveGroupChat(Guid ChatId)  // ???????
         {
@@ -70,7 +70,7 @@ namespace MessagingPlatformAPI.Services.Implementation
         {
             await _base.Update(c);
         }
-        public async Task<SimpleResponseDTO> ChangeChatPic(Chat chat, IFormFile pic)
+        public async Task<SimpleResponseDTO<ChatImage>> ChangeChatPic(Chat chat, IFormFile pic)
         {
             var currentPic = await _chatPicBase.Get(p => p.ChatId == chat.Id);
             if (currentPic != null)
@@ -81,21 +81,22 @@ namespace MessagingPlatformAPI.Services.Implementation
             var cloudinaryRes = await _cloudinaryService.UploadFile(pic);
             if (cloudinaryRes.IsSuccess)
             {
-                await _chatPicBase.Create(new ChatImage() { PublicId = cloudinaryRes.PublicId, Url = cloudinaryRes.Url, ChatId = chat.Id });
-                return new SimpleResponseDTO() { IsSuccess = true, Message = "Changing chat picture is done" };
+                var chatImage = new ChatImage() { PublicId = cloudinaryRes.PublicId, Url = cloudinaryRes.Url, ChatId = chat.Id };
+                await _chatPicBase.Create(chatImage);
+                return new SimpleResponseDTO<ChatImage>() { IsSuccess = true, Message = "Changing chat picture is done", Object=chatImage };
             }
-            return new SimpleResponseDTO() { IsSuccess = false };
+            return new SimpleResponseDTO<ChatImage>() { IsSuccess = false };
         }
-        public async Task<SimpleResponseDTO> DeleteChatPic(string ImagePublicId)
+        public async Task<SimpleResponseDTO<ChatImage>> DeleteChatPic(string ImagePublicId)
         {
             var currentPic = await _chatPicBase.Get(p => p.PublicId == ImagePublicId);
             if (currentPic != null)
             {
                 await _cloudinaryService.DeleteFile(ImagePublicId);
                 await _chatPicBase.Remove(currentPic);
-                return new SimpleResponseDTO() { IsSuccess = true, Message = "Deletion is done" };
+                return new SimpleResponseDTO<ChatImage>() { IsSuccess = true, Message = "Deletion is done", Object= currentPic };
             }
-            return new SimpleResponseDTO() { IsSuccess = false, Message = "Deletion is failed" };
+            return new SimpleResponseDTO<ChatImage>() { IsSuccess = false, Message = "Deletion is failed" };
         }
     }
 }

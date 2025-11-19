@@ -6,7 +6,7 @@ namespace MessagingPlatformAPI.Services.Interface
 {
     public interface IDeviceTokenService
     {
-        Task<SimpleResponseDTO> CreateDeviceToken(string UserId, CreateTokenDTO model);
+        Task<SimpleResponseDTO<DeviceToken>> CreateDeviceToken(string UserId, CreateTokenDTO model);
         Task DeleteAsync(DeviceToken token);
     }
 }

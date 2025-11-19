@@ -16,13 +16,13 @@ namespace MessagingPlatformAPI.Services.Implementation
             _base = @base;
             _mapper = mapper;
         }
-        public async Task<SimpleResponseDTO> CreateDeviceToken(string UserId, CreateTokenDTO model)
+        public async Task<SimpleResponseDTO<DeviceToken>> CreateDeviceToken(string UserId, CreateTokenDTO model)
         {
             var token = _mapper.Map<DeviceToken>(model);
             token.UserId = UserId;
             token.CeratedAt = DateTime.UtcNow;
             await _base.Create(token);
-            return new SimpleResponseDTO() { IsSuccess=true };
+            return new SimpleResponseDTO<DeviceToken>() { IsSuccess=true, Object=token };
         }
         public async Task DeleteAsync(DeviceToken token)
         {

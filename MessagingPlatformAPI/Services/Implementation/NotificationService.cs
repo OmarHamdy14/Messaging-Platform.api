@@ -22,6 +22,7 @@ namespace MessagingPlatformAPI.Services.Implementation
         public async Task<bool> PushNotification(string UserId, CreatePushNotificationDTO model)
         {
             var UserDeviceTokens = await _baseDeviceToken.GetAll(d => d.UserId == UserId);
+            if (!UserDeviceTokens.Any()) return false;
             foreach(var tkn in UserDeviceTokens)
             {
                 var message = new Message
@@ -54,10 +55,11 @@ namespace MessagingPlatformAPI.Services.Implementation
                         return false;
                         //Console.WriteLine($"Removed invalid token: {tkn.Token}");
                     }
-
+                    return false;
                     // Log or handle other errors here
                 }
             }
+            return true;
         }
     }
 }
