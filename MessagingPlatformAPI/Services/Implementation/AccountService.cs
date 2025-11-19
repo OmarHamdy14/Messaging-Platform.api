@@ -2,13 +2,17 @@
 using MessagingPlatformAPI.Base.Interface;
 using MessagingPlatformAPI.Helpers.DTOs.AccountDTOs;
 using MessagingPlatformAPI.Helpers.DTOs.ResponsesDTOs;
+using MessagingPlatformAPI.Helpers.DTOs.TokenDTOs;
 using MessagingPlatformAPI.Helpers.JWTconfig;
 using MessagingPlatformAPI.Models;
 using MessagingPlatformAPI.Services.Interface;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json.Linq;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace MessagingPlatformAPI.Services.Implementation
@@ -21,7 +25,9 @@ namespace MessagingPlatformAPI.Services.Implementation
         private readonly IUserSettingsService _userSettingsService;
         private readonly IMapper _mapper;
         private readonly JWT _jwt;
-        public AccountService(UserManager<ApplicationUser> userManager, IMapper mapper, JWT jwt, ICloudinaryService cloudinaryService, IEntityBaseRepository<ProfileImage> profileImageBase, IUserSettingsService userSettingsService)
+        private readonly IConfiguration _confg;
+        public AccountService(UserManager<ApplicationUser> userManager, IMapper mapper, JWT jwt, ICloudinaryService cloudinaryService, 
+            IEntityBaseRepository<ProfileImage> profileImageBase, IUserSettingsService userSettingsService, IConfiguration confg)
         {
             _userManager = userManager;
             _mapper = mapper;
@@ -29,6 +35,7 @@ namespace MessagingPlatformAPI.Services.Implementation
             _cloudinaryService = cloudinaryService;
             _profileImageBase = profileImageBase;
             _userSettingsService = userSettingsService;
+            _confg = confg;
         }
         public async Task<ApplicationUser> FindById(string userId)
         {
@@ -74,7 +81,7 @@ namespace MessagingPlatformAPI.Services.Implementation
             if (!PassCheck) return new AuthModel() { Message = "Invalid Password." };
 
             var token = await CreateJwtToken(user);
-            return new AuthModel() { Token = new JwtSecurityTokenHandler().WriteToken(token), IsAuthenticated = true, Message = "LogIn is Succeeded." };
+            return new AuthModel() { Token = new JwtSecurityTokenHandler().WriteToken(token), IsAuthenticated = true, Message = "LogIn is Succeeded.", RefreshToken= await CreateRefreshToken() };
         }
         private async Task<JwtSecurityToken> CreateJwtToken(ApplicationUser user)
         {
@@ -149,7 +156,53 @@ namespace MessagingPlatformAPI.Services.Implementation
             }
             return new SimpleResponseDTO<ProfileImage>() { IsSuccess = false, Message = "Deletion is failed" };
         }
+        
+        
+        public async Task<string> CreateRefreshToken()
+        {
+            return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+        }
+        public async Task<SimpleResponseDTO<RefreshTokenResponseDTO>> RefreshToken(RefreshTokenRequestDTO model)
+        {
+            var principal = GetPrincipalFromExpiredToken(model.AccessToken);
+            var userId = principal.FindFirstValue(ClaimTypes.NameIdentifier);
 
+            var user = await FindById(userId);
+            if (user == null || user.RefreshToken != model.RefreshToken)
+                return new SimpleResponseDTO<RefreshTokenResponseDTO>(){ IsSuccess=false, Message="Invalid refresh token" };
 
+            if (user.RefreshTokenExpiry < DateTime.UtcNow)
+                return new SimpleResponseDTO<RefreshTokenResponseDTO>() { IsSuccess = false, Message = "Expired refresh token" };
+
+            var newAccess = new JwtSecurityTokenHandler().WriteToken(await CreateJwtToken(user));
+            var newRefresh = await CreateRefreshToken();
+
+            user.RefreshToken = newRefresh;
+            user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(7);
+            await _userManager.UpdateAsync(user);
+
+            return new SimpleResponseDTO<RefreshTokenResponseDTO>() { IsSuccess=true, Message="refresh tokens is succeeded", Object= new RefreshTokenResponseDTO(){AccessToken=newAccess, RefreshToken= newRefresh };
+        }
+        private ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
+        {
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateAudience = false,
+                ValidateIssuer = false,
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(
+                    Encoding.UTF8.GetBytes(_confg["Jwt:Key"])
+                ),
+                ValidateLifetime = false
+            };
+
+            var handler = new JwtSecurityTokenHandler();
+            var principal = handler.ValidateToken(token, tokenValidationParameters, out var securityToken);
+
+            if (securityToken is not JwtSecurityToken jwt)
+                throw new SecurityTokenException("Invalid token");
+
+            return principal;
+        }
     }
 }

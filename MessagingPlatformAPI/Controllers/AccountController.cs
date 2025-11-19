@@ -1,4 +1,5 @@
 ﻿using MessagingPlatformAPI.Helpers.DTOs.AccountDTOs;
+using MessagingPlatformAPI.Helpers.DTOs.TokenDTOs;
 using MessagingPlatformAPI.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -128,12 +129,16 @@ namespace MessagingPlatformAPI.Controllers
             try
             {
                 var authModel = await _accountService.GetTokenAsync(model);
-                if (!authModel.IsAuthenticated)
+                /*if (!authModel.IsAuthenticated)
                 {
                     _logger.LogWarning("Registration of this user with '{email}' is not succedded", model.Email);
                     return BadRequest(authModel);
-                }
+                }*/
+                
                 var user = await _accountService.FindByEmail(model.Email);
+                user.RefreshToken = authModel.RefreshToken;
+                user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(7);
+
                 _logger.LogInformation("{FName} {lName} login successfully", user.FirstName, user.LastName);
                 return Ok(authModel);
             }
@@ -235,6 +240,21 @@ namespace MessagingPlatformAPI.Controllers
             {
                 return StatusCode(500, new { Message = "Something went wrong." });
             }
+        }
+
+
+        [AllowAnonymous]
+        [HttpGet("Refresh")]
+        public async Task<IActionResult> Refresh(RefreshTokenRequestDTO model) 
+        {
+            if (!ModelState.IsValid)
+            {
+                _logger.LogWarning("inputs are wrong");
+                return BadRequest(ModelState);
+            }
+            var res = await _accountService.RefreshToken(model);
+            if (res.IsSuccess) return Ok(res.Object);
+            return Unauthorized(res);
         }
     }
 }

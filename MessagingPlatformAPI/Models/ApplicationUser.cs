@@ -14,7 +14,8 @@ namespace MessagingPlatformAPI.Models
         
         public string Bio { get; set; }
 
-
+        public string RefreshToken { get; set; }
+        public DateTime RefreshTokenExpiry { get; set; }
 
         public Guid ProfileImageId { get; set; }
         [ForeignKey("ProfileImageId")]
