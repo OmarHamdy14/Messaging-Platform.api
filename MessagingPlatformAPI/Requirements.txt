@@ -95,12 +95,12 @@ LoginHistory
 
 19. real-time reactions --- done
 
-20. RefreshToken
+20. RefreshToken --- done
 
 
-RefreshToken
 LastSennPrivacy: friends except { .... }
 Caching
 LastSeenPrivacy 
 ReadReceiptsEnabled 
 UserSettings
+Unit testing
