@@ -1,5 +1,7 @@
-﻿using MessagingPlatformAPI.Helpers.DTOs.AccountDTOs;
+﻿using AutoMapper;
+using MessagingPlatformAPI.Helpers.DTOs.AccountDTOs;
 using MessagingPlatformAPI.Helpers.DTOs.TokenDTOs;
+using MessagingPlatformAPI.Services.Implementation;
 using MessagingPlatformAPI.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -14,13 +16,16 @@ namespace MessagingPlatformAPI.Controllers
         private readonly IAccountService _accountService;
         private readonly IChatMembersService _chatMembersService;
         private readonly ICloudinaryService _cloudinaryService;
+        private readonly IContactService _contactService;
         private readonly ILogger<AccountController> _logger;
-        public AccountController(IAccountService accountService, ILogger<AccountController> logger, IChatMembersService chatMembersService, ICloudinaryService cloudinaryService)
+        public AccountController(IAccountService accountService, ILogger<AccountController> logger, IChatMembersService chatMembersService, 
+            ICloudinaryService cloudinaryService, IContactService contactService)
         {
             _accountService = accountService;
             _logger = logger;
             _chatMembersService = chatMembersService;
             _cloudinaryService = cloudinaryService;
+            _contactService = contactService;
         }
         [Authorize]
         [HttpGet("FindById/{userId}")]
@@ -256,5 +261,11 @@ namespace MessagingPlatformAPI.Controllers
             if (res.IsSuccess) return Ok(res.Object);
             return Unauthorized(res);
         }
+    }
+    [HttpGet("GetLastSeen")]
+    public async Task<IActionResult> GetLastSeen(string requesterId, string targetId)
+    {
+        if (string.IsNullOrEmpty(requesterId) || string.IsNullOrEmpty(targetId)) return BadRequest();
+        return await _contactService.GetLastSeen(requesterId, targetId);
     }
 }

@@ -24,11 +24,13 @@ namespace MessagingPlatformAPI.SignalrConfig
         private readonly IPresenseTrackerService _presenseTrackerService;
         private readonly INotificationService _notificationService;
         private readonly IReactionService _reactionService;
+        private readonly IUserSettingsService _userSettingsService;
         private readonly ILogger<ChatHub> _logger;
         public ChatHub
             (IAccountService accountService, IChatMembersService chatMembersService, ILogger<ChatHub> logger, IUserConnectionService userConnectionService, 
             IMessageService messageService, IChatService chatService, IBlockingService blockingService, IMessageStatusService messageStatusService, 
-            IPresenseTrackerService presenseTrackerService, INotificationService notificationService, IReactionService reactionService)
+            IPresenseTrackerService presenseTrackerService, INotificationService notificationService, IReactionService reactionService,
+            IUserSettingsService userSettingsService)
         {
             _accountService = accountService;
             _chatMembersService = chatMembersService;
@@ -41,6 +43,7 @@ namespace MessagingPlatformAPI.SignalrConfig
             _presenseTrackerService = presenseTrackerService;
             _notificationService = notificationService;
             _reactionService = reactionService;
+            _userSettingsService = userSettingsService;
         }
         public async Task SendMessage(CreateMessageDTO model, List<IFormFile> files)
         {
@@ -97,12 +100,19 @@ namespace MessagingPlatformAPI.SignalrConfig
             await Clients.Group(model.ChatId.ToString()).SendAsync("ReceiveMessage", user.UserName, model.Content);
             _logger.LogInformation("Sending message from user '{fname} {lname}' is succedded", user.FirstName, user.LastName);
         }
+        
         public async Task DeleteMessage(Guid MessageId, bool IsForEveryone)
         {
             var message = await _messageService.GetById(MessageId);
             var UserId = Context.UserIdentifier;
             await Clients.Group(message.ChatId.ToString()).SendAsync("DeleteMessage", new { MessageId, UserId, IsForEveryone });
         }
+
+
+
+
+
+
 
         public async Task AddUserToGroup(Guid GroupId)
         {
@@ -112,6 +122,11 @@ namespace MessagingPlatformAPI.SignalrConfig
         {
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupId.ToString());
         }
+
+
+
+
+
 
 
 
@@ -149,6 +164,11 @@ namespace MessagingPlatformAPI.SignalrConfig
 
 
 
+
+
+
+
+
         public async Task SendStartTypingIndicator(Guid ChatId)
         {
             var userId = Context.UserIdentifier;
@@ -174,10 +194,26 @@ namespace MessagingPlatformAPI.SignalrConfig
             await Clients.GroupExcept(ChatId.ToString(), new[] { userId }).SendAsync("StopRecording", new { UserId = userId, ChatId = ChatId });
         }
 
+
+
+
+
+
+
+
+
+
         public async Task ChangeMessageStatusofChatToSeen(Guid ChatId) 
         {
+            var chat = await _chatService.GetById(ChatId);
             var UserId = Context.UserIdentifier;
             var user = await _accountService.FindById(UserId);
+            if(chat.chatType == ChatType.prv)
+            {
+                var setngs = await _userSettingsService.GetByUserId(UserId);
+                if (setngs.ReadReceiptsEnabled) return;
+            }
+
             var DeliveredMsgs = await _messageService.GetAllAfterDatetimeWithChatId(user.LastSeen, ChatId);
             foreach (var msg in DeliveredMsgs)
             {
@@ -198,6 +234,15 @@ namespace MessagingPlatformAPI.SignalrConfig
                 await Clients.GroupExcept(msg.ChatId.ToString(), new[] { UserId }).SendAsync("ChangeMessageStatusToSeen", msg.Id);
             }
         }
+
+
+
+
+
+
+
+
+
 
         public override async Task OnConnectedAsync()
         {

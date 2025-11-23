@@ -9,7 +9,7 @@ namespace MessagingPlatformAPI.Controllers
     public class ContactController : ControllerBase
     {
         private readonly IContactService _contactService;
-        public ContactController(IContactService contactService)
+        public ContactController(IContactService contactService, IUserSettingsService userSettingsService)
         {
             _contactService = contactService;
         }

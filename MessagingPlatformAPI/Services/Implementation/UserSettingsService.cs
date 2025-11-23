@@ -16,7 +16,7 @@ namespace MessagingPlatformAPI.Services.Implementation
             _base = @base;
             _mapper = mapper;
         }
-        public async Task<UserSettings> GetById(string UserId)
+        public async Task<UserSettings> GetByUserId(string UserId)
         {
             return await _base.Get(s => s.UserId == UserId);
         }

@@ -1,5 +1,6 @@
 ﻿using MessagingPlatformAPI.Base.Interface;
 using MessagingPlatformAPI.Helpers.DTOs.ResponsesDTOs;
+using MessagingPlatformAPI.Helpers.Enums;
 using MessagingPlatformAPI.Models;
 using MessagingPlatformAPI.Services.Interface;
 
@@ -8,9 +9,13 @@ namespace MessagingPlatformAPI.Services.Implementation
     public class ContactService : IContactService
     {
         private readonly IEntityBaseRepository<Contact> _base;
-        public ContactService(IEntityBaseRepository<Contact> @base)
+        private readonly IUserSettingsService _userSettingsService;
+        private readonly IPresenseTrackerService _presenseTrackerService;
+        public ContactService(IEntityBaseRepository<Contact> @base, IUserSettingsService userSettingsService,IPresenseTrackerService presenseTrackerService)
         {
             _base = @base;
+            _userSettingsService = userSettingsService;
+            _presenseTrackerService = presenseTrackerService;
         }
         public async Task<Contact> Get(string userId, string contactId)
         {
@@ -32,6 +37,19 @@ namespace MessagingPlatformAPI.Services.Implementation
             var conct = await Get(userId, contactId);
             await _base.Remove(conct);
             return new SimpleResponseDTO<Contact>() { IsSuccess = true, Message = "", Object = conct }; // is passing contact wrong?
+        }
+        public async Task<DateTime> GetLastSeen(string requesterId, string targetId)
+        {
+            var setng = await _userSettingsService.GetByUserId(targetId);
+
+            return setng.Privacy switch
+            {
+                LastSeenPrivacy.Nobody => null,
+                LastSeenPrivacy.Everyone => await _presenseTrackerService.GetLastSeen(targetId),
+                LastSeenPrivacy.ContactsOnly => await IsContact(requesterId, targetId) ?
+                                                await _presenseTrackerService.GetLastSeen(targetId) : null,
+                _ => null
+            };
         }
     }
 }

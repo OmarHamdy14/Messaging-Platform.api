@@ -101,6 +101,5 @@ LoginHistory
 LastSennPrivacy: friends except { .... }
 Caching
 LastSeenPrivacy 
-ReadReceiptsEnabled 
 UserSettings
 Unit testing

@@ -1,16 +1,21 @@
-﻿using System.ComponentModel;
+﻿using MessagingPlatformAPI.Helpers.Enums;
+using System.ComponentModel;
 
 namespace MessagingPlatformAPI.Models
 {
     public class UserSettings
     {
         public Guid Id { get; set; }
+
         [DefaultValue(false)]
         public bool ReadReceiptsEnabled { get; set; }
-        [DefaultValue(false)]
-        public bool LastSeenPrivacy { get; set; }
+
+        [DefaultValue(LastSeenPrivacy.Everyone)]
+        public LastSeenPrivacy Privacy { get; set; }
+
         [DefaultValue(false)]
         public bool IsDoNotDisturbMode { get; set; }
+
         [DefaultValue(false)]
         public bool IsVerified { get; set; }
 

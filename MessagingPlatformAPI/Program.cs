@@ -36,6 +36,7 @@ namespace MessagingPlatformAPI
             builder.Services.AddScoped<IEntityBaseRepository<BlockedUser>, EntityBaseRepository<BlockedUser>>();
             builder.Services.AddScoped<IEntityBaseRepository<DeviceToken>, EntityBaseRepository<DeviceToken>>();
             builder.Services.AddScoped<IEntityBaseRepository<UserSettings>, EntityBaseRepository<UserSettings>>();
+            builder.Services.AddScoped<IEntityBaseRepository<Contact>, EntityBaseRepository<Contact>>();
 
             builder.Services.AddScoped<IAccountService, AccountService>();
             builder.Services.AddScoped<IChatService, ChatService>();
@@ -48,6 +49,7 @@ namespace MessagingPlatformAPI
             builder.Services.AddScoped<IBlockingService, BlockingService>();
             builder.Services.AddScoped<IDeviceTokenService, DeviceTokenService>();
             builder.Services.AddScoped<IUserSettingsService, UserSettingsService>();
+            builder.Services.AddScoped<IContactService, ContactService>();
 
             builder.Logging.ClearProviders();
             builder.Logging.AddConsole();

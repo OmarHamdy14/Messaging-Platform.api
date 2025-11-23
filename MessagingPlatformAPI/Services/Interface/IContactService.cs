@@ -9,5 +9,7 @@ namespace MessagingPlatformAPI.Services.Interface
         Task<bool> IsContact(string userId, string contactId);
         Task<SimpleResponseDTO<Contact>> Create(string userId, string contactId);
         Task<SimpleResponseDTO<Contact>> Delete(string userId, string contactId);
+
+        Task<DateTime> GetLastSeen(string requesterId, string targetId);
     }
 }
