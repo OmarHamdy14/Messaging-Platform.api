@@ -2,6 +2,7 @@
 using MessagingPlatformAPI.Helpers.DTOs.AccountDTOs;
 using MessagingPlatformAPI.Helpers.DTOs.ChatDTOs;
 using MessagingPlatformAPI.Helpers.DTOs.DeviceTokenDTOs;
+using MessagingPlatformAPI.Helpers.DTOs.GroupInviteLinkDTOs;
 using MessagingPlatformAPI.Helpers.DTOs.MessageDTOs;
 using MessagingPlatformAPI.Helpers.DTOs.ReactionDTOs;
 using MessagingPlatformAPI.Helpers.DTOs.SettingsDTOs;
@@ -30,6 +31,8 @@ namespace MessagingPlatformAPI.Helpers.Mapping
             CreateMap<UserSettings, UpdateUserSettingsDTO>().ReverseMap();
 
             CreateMap<UserConnection, CreateUserConnectionDTO>().ReverseMap();
+
+            CreateMap<GroupInviteLink, CreateLinkDTO>().ReverseMap();
         }
     }
 }

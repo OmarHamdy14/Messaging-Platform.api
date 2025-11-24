@@ -288,7 +288,12 @@ namespace MessagingPlatformAPI.SignalrConfig
             await _presenseTrackerService.UserDisconnectedAsync(UserId, Context.ConnectionId);
             bool isStillOnline = await _presenseTrackerService.IsUserOnline(UserId);
             if (!isStillOnline)
+            {
                 await Clients.Others.SendAsync("UserIsOffline", UserId);
+                user.LastSeen = DateTime.UtcNow;
+                user.IsOnline = false;
+                await _accountService.SaveChangesAsync(user);
+            }
 
             // if user open the app in another device, he is still online
             await base.OnDisconnectedAsync(exception);

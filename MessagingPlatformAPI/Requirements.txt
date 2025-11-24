@@ -1,6 +1,6 @@
 ﻿1. Presence & Status
 User Status Message
-Do Not Disturb Mode --- XXX ***
+Do Not Disturb Mode --- done
 Typing Indicator --- done
 Recording Indicator --- done
 Read Receipts --- done
@@ -11,7 +11,7 @@ Delivery Status --- done
 Message Reactions --- done
 
 2. Messaging Metadata
-ForwardedFrom --- XXX ***
+ForwardedFrom
 Attachments --- done
 PinnedMessageId --- done (check solution)
 IsForwarded --- done
@@ -26,7 +26,7 @@ ReplyToMessageId --- done (check solution)
 Reactions --- done
 
 3. User Profile Info
-DisplayName --- XXX
+DisplayName
 IsBlocked --- done
 BlockedUsers --- done
 ProfilePictureUrl --- done
@@ -36,8 +36,8 @@ Email --- done
 IsVerified --- done
 
 4. Group Chat & Membership
-InviteLink --- XXX ***
 MuteUntil --- XXX
+InviteLink --- done
 GroupPictureUrl --- done
 PinnedMessages --- done (check solution)
 IsMuted --- done (check solution)
@@ -59,9 +59,9 @@ PublicKey
 PrivateKey
 IsTwoFactorEnabled
 BlockedContacts
-LastSeenPrivacy --- XXX ***
-ReadReceiptsEnabled --- XXX ***
 EncryptedMessages
+LastSeenPrivacy --- done
+ReadReceiptsEnabled --- done
 
 7. Analytics & Moderation
 MessageCount
@@ -81,7 +81,7 @@ LoginHistory
 
 12. prevent sending messages to deleted or leaved groups --- done
 
-13. LastSennPrivacy: friends except { .... } --- X
+13. LastSennPrivacy: friends except { .... } --- done
 
 14. delivered status after use FCM --- done
 
@@ -97,9 +97,9 @@ LoginHistory
 
 20. RefreshToken --- done
 
-
-LastSennPrivacy: friends except { .... }
+BlockedContacts
+MuteUntil
 Caching
-LastSeenPrivacy 
-UserSettings
 Unit testing
+should i seperate group from private chats
+do i have to depend always on abstraction in any case ??

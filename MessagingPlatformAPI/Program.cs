@@ -37,6 +37,7 @@ namespace MessagingPlatformAPI
             builder.Services.AddScoped<IEntityBaseRepository<DeviceToken>, EntityBaseRepository<DeviceToken>>();
             builder.Services.AddScoped<IEntityBaseRepository<UserSettings>, EntityBaseRepository<UserSettings>>();
             builder.Services.AddScoped<IEntityBaseRepository<Contact>, EntityBaseRepository<Contact>>();
+            builder.Services.AddScoped<IEntityBaseRepository<GroupInviteLink>, EntityBaseRepository<GroupInviteLink>>();
 
             builder.Services.AddScoped<IAccountService, AccountService>();
             builder.Services.AddScoped<IChatService, ChatService>();
@@ -50,6 +51,7 @@ namespace MessagingPlatformAPI
             builder.Services.AddScoped<IDeviceTokenService, DeviceTokenService>();
             builder.Services.AddScoped<IUserSettingsService, UserSettingsService>();
             builder.Services.AddScoped<IContactService, ContactService>();
+            builder.Services.AddScoped<IGroupInviteLinkService, GroupInviteLinkService>();
 
             builder.Logging.ClearProviders();
             builder.Logging.AddConsole();

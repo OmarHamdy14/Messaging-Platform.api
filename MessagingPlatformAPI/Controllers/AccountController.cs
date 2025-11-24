@@ -261,11 +261,11 @@ namespace MessagingPlatformAPI.Controllers
             if (res.IsSuccess) return Ok(res.Object);
             return Unauthorized(res);
         }
-    }
-    [HttpGet("GetLastSeen")]
-    public async Task<IActionResult> GetLastSeen(string requesterId, string targetId)
-    {
-        if (string.IsNullOrEmpty(requesterId) || string.IsNullOrEmpty(targetId)) return BadRequest();
-        return await _contactService.GetLastSeen(requesterId, targetId);
+        [HttpGet("GetLastSeen")]
+        public async Task<IActionResult> GetLastSeen(string requesterId, string targetId)
+        {
+            if (string.IsNullOrEmpty(requesterId) || string.IsNullOrEmpty(targetId)) return BadRequest();
+            return Ok(await _contactService.GetLastSeen(requesterId, targetId));
+        }
     }
 }

@@ -27,5 +27,6 @@ namespace MessagingPlatformAPI.Models
         public DbSet<DeviceToken> deviceTokens { get; set; }
         public DbSet<UserSettings> UserSettings { get; set; }
         public DbSet<Contact> Contacts { get; set; }
+        public DbSet<GroupInviteLink> GroupInviteLinks { get; set; }
     }
 }

@@ -11,11 +11,13 @@ namespace MessagingPlatformAPI.Services.Implementation
         private readonly IEntityBaseRepository<Contact> _base;
         private readonly IUserSettingsService _userSettingsService;
         private readonly IPresenseTrackerService _presenseTrackerService;
-        public ContactService(IEntityBaseRepository<Contact> @base, IUserSettingsService userSettingsService,IPresenseTrackerService presenseTrackerService)
+        private readonly IAccountService _accountService;
+        public ContactService(IEntityBaseRepository<Contact> @base, IUserSettingsService userSettingsService,IPresenseTrackerService presenseTrackerService, IAccountService accountService)
         {
             _base = @base;
             _userSettingsService = userSettingsService;
             _presenseTrackerService = presenseTrackerService;
+            _accountService = accountService;
         }
         public async Task<Contact> Get(string userId, string contactId)
         {
@@ -38,16 +40,17 @@ namespace MessagingPlatformAPI.Services.Implementation
             await _base.Remove(conct);
             return new SimpleResponseDTO<Contact>() { IsSuccess = true, Message = "", Object = conct }; // is passing contact wrong?
         }
-        public async Task<DateTime> GetLastSeen(string requesterId, string targetId)
+        public async Task<string> GetLastSeen(string requesterId, string targetId)
         {
             var setng = await _userSettingsService.GetByUserId(targetId);
-
+            var targetUser = await _accountService.FindById(targetId);
+            var res = targetUser.IsOnline ? "Online" : "Last Seen " + targetUser.LastSeen;
             return setng.Privacy switch
             {
                 LastSeenPrivacy.Nobody => null,
-                LastSeenPrivacy.Everyone => await _presenseTrackerService.GetLastSeen(targetId),
+                LastSeenPrivacy.Everyone => res,
                 LastSeenPrivacy.ContactsOnly => await IsContact(requesterId, targetId) ?
-                                                await _presenseTrackerService.GetLastSeen(targetId) : null,
+                                                res : null,
                 _ => null
             };
         }
