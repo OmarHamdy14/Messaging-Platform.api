@@ -1,4 +1,5 @@
 ﻿using MessagingPlatformAPI.Base.Interface;
+using MessagingPlatformAPI.Helpers.DTOs.ChatDTOs;
 using MessagingPlatformAPI.Helpers.DTOs.ChatMemberDTOs;
 using MessagingPlatformAPI.Helpers.DTOs.ResponsesDTOs;
 using MessagingPlatformAPI.Models;
@@ -40,6 +41,34 @@ namespace MessagingPlatformAPI.Services.Implementation
             if (member == null) return new SimpleResponseDTO<Chat_Member>() { IsSuccess = false, Message = $"Failed !!! This record: MemberId={model.MemberId} & ChatId={model.ChatId} is not found" };
             await _base.Remove(member);
             return new SimpleResponseDTO<Chat_Member>() { IsSuccess = true, Message = "Deletion is succedded", Object=member };
+        }
+
+
+        public async Task<bool> MuteChat(MuteDTO model)
+        {
+            var member = await _base.Get(m => m.ChatId == model.ChatId && m.MemberId == model.UserId);
+            member.MuteDuration = DateTime.UtcNow.Add(model.duration);
+            await _base.Update(member);
+            return true;
+        }
+        public async Task<bool> MuteChatAlways(Guid chatId, string userId)
+        {
+            var member = await _base.Get(m => m.ChatId == chatId && m.MemberId == userId);
+            member.MuteDuration = DateTime.MaxValue;
+            await _base.Update(member);
+            return true;
+        }
+        public async Task<bool> UnMute(Guid chatId, string userId)
+        {
+            var member = await _base.Get(m => m.ChatId == chatId && m.MemberId == userId);
+            member.MuteDuration = null;
+            await _base.Update(member);
+            return true;
+        }
+        public async Task<bool> IsMuted(Guid chatId, string userId)
+        {
+            var member = await _base.Get(m => m.ChatId == chatId && m.MemberId == userId);
+            return member.MuteDuration.HasValue && member.MuteDuration.Value > DateTime.UtcNow;
         }
     }
 }

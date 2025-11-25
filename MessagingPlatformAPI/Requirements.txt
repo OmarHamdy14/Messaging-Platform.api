@@ -36,7 +36,7 @@ Email --- done
 IsVerified --- done
 
 4. Group Chat & Membership
-MuteUntil --- XXX
+MuteUntil --- done
 InviteLink --- done
 GroupPictureUrl --- done
 PinnedMessages --- done (check solution)
@@ -98,7 +98,6 @@ LoginHistory
 20. RefreshToken --- done
 
 BlockedContacts
-MuteUntil
 Caching
 Unit testing
 should i seperate group from private chats

@@ -12,6 +12,8 @@ namespace MessagingPlatformAPI.Models
         [DefaultValue(false)]
         public bool IsAdmin { get; set; }
 
+        public DateTime? MuteDuration { get; set; }
+
         public Guid ChatId { get; set; }
         public Chat Chat { get; set; }
     }

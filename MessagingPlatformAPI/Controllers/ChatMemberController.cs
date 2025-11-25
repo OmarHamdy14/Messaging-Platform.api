@@ -1,4 +1,6 @@
-﻿using MessagingPlatformAPI.Helpers.DTOs.ChatMemberDTOs;
+﻿using MessagingPlatformAPI.Helpers.DTOs.ChatDTOs;
+using MessagingPlatformAPI.Helpers.DTOs.ChatMemberDTOs;
+using MessagingPlatformAPI.Models;
 using MessagingPlatformAPI.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -91,6 +93,38 @@ namespace MessagingPlatformAPI.Controllers
             {
                 return StatusCode(500, new { Message = "Something went wrong." });
             }
+        }
+
+
+
+
+        [HttpPut]
+        public async Task<IActionResult> MuteChat([FromBody] MuteDTO model)
+        {
+            var res = await _chatMembersService.MuteChat(model);
+            if (res) return Ok();
+            return BadRequest();
+        }
+        [HttpPut]
+        public async Task<IActionResult> MuteChatAlways(Guid chatId, string userId)
+        {
+            var res = await _chatMembersService.MuteChatAlways(chatId, userId);
+            if (res) return Ok();
+            return BadRequest();
+        }
+        [HttpPut]
+        public async Task<IActionResult> UnMute(Guid chatId, string userId)
+        {
+            var res = await _chatMembersService.UnMute(chatId, userId);
+            if (res) return Ok();
+            return BadRequest();
+        }
+        [HttpGet]
+        public async Task<IActionResult> IsMuted(Guid chatId, string userId)
+        {
+            var res = await _chatMembersService.IsMuted(chatId, userId);
+            if (res) return Ok();
+            return BadRequest();
         }
     }
 }

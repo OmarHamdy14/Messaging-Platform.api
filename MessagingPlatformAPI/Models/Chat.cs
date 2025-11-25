@@ -16,8 +16,6 @@ namespace MessagingPlatformAPI.Models
 
         public ChatType chatType { get; set; }
 
-        [DefaultValue(false)]
-        public bool IsMuted { get; set; }
 
         public string? ChatCreatorId { get; set; }
         [ForeignKey("ChatCreatorId")]

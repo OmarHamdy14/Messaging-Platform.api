@@ -48,7 +48,10 @@ namespace MessagingPlatformAPI.SignalrConfig
         public async Task SendMessage(CreateMessageDTO model, List<IFormFile> files)
         {
             var chat = await _chatService.GetById(model.ChatId);
-            if (chat.chatType == Helpers.Enums.ChatType.prv)
+
+            /*
+             * *************************************************
+            if (chat.chatType == Helpers.Enums.ChatType.prv) // if i block someone named Ada, ada still can send a message but i will not see it
             {
                 var SenderId = Context.UserIdentifier;
                 var mems = await _chatMembersService.GetAllByChatId(model.ChatId);
@@ -62,6 +65,8 @@ namespace MessagingPlatformAPI.SignalrConfig
                 var mem = await _chatMembersService.GetByChatIdAndMemberId(model.ChatId,SenderId);
                 if (mem is null) return;
             }
+             * *************************************************
+            */
 
             var userId = Context.UserIdentifier;
             var user = await _accountService.FindById(userId);
