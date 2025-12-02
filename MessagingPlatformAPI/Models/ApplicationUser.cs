@@ -6,13 +6,17 @@ namespace MessagingPlatformAPI.Models
 {
     public class ApplicationUser : IdentityUser
     {
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
+        //public string FirstName { get; set; }
+        //public string LastName { get; set; }
+        public string DisplayName { get; set; }
 
         public bool IsOnline { get; set; }
         public DateTime LastSeen { get; set; }
         
-        public string Bio { get; set; }
+
+        public bool IsTwoFactorEnabled { get; set; }
+
+        public string StatusMessage { get; set; }
 
         public string RefreshToken { get; set; }
         public DateTime RefreshTokenExpiry { get; set; }

@@ -1,5 +1,5 @@
 ﻿1. Presence & Status
-User Status Message
+User Status Message --- done
 Do Not Disturb Mode --- done
 Typing Indicator --- done
 Recording Indicator --- done
@@ -11,7 +11,7 @@ Delivery Status --- done
 Message Reactions --- done
 
 2. Messaging Metadata
-ForwardedFrom
+ForwardedFrom --- done
 Attachments --- done
 PinnedMessageId --- done (check solution)
 IsForwarded --- done
@@ -26,7 +26,7 @@ ReplyToMessageId --- done (check solution)
 Reactions --- done
 
 3. User Profile Info
-DisplayName
+DisplayName --- done
 IsBlocked --- done
 BlockedUsers --- done
 ProfilePictureUrl --- done
@@ -71,7 +71,7 @@ IsSuspended
 IsBanned
 LoginHistory
 
-8. Caching --- XXX ***
+8. Caching
 
 9. Re-add to groups --- done
 
@@ -97,7 +97,6 @@ LoginHistory
 
 20. RefreshToken --- done
 
-BlockedContacts
 Caching
 Unit testing
 should i seperate group from private chats

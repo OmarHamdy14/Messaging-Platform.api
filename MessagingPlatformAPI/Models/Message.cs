@@ -32,6 +32,9 @@ namespace MessagingPlatformAPI.Models
         [ForeignKey("ReplayToMessageId")]
         public Message ReplayToMessage { get; set; }
 
+        public Guid ForwardFromMessageId { get; set; }
+        public Guid ForwardFromUserId { get; set; }
+
         public ICollection<MessageStatus> messageStatuses { get; set; }
 
         public ICollection<Reaction> reactions { get; set; }
