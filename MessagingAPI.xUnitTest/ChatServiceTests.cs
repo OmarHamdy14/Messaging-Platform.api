@@ -1,5 +1,6 @@
 using AutoMapper;
 using MessagingPlatformAPI.Base.Interface;
+using MessagingPlatformAPI.Helpers.DTOs.ChatDTOs;
 using MessagingPlatformAPI.Models;
 using MessagingPlatformAPI.Services.Implementation;
 using MessagingPlatformAPI.Services.Interface;
@@ -43,6 +44,26 @@ namespace MessagingAPI.xUnitTest
                 It.IsAny<string>(),
                 It.IsAny<bool>()
             ), Times.Once);
+        }
+        [Fact]
+        public async Task Create_ShouldCreateChat_AndReturnSuccess()
+        {
+            var dto = new CerateChatDTO { };
+
+            var chat = new Chat();
+            _mapperMock.Setup(m => m.Map<Chat>(dto)).Returns(chat);
+
+            _chatMockRepo.Setup(r => r.Create(It.IsAny<Chat>())).Returns(Task.CompletedTask);
+
+
+            var result = await _chatService.Create(dto);
+
+
+            Assert.NotNull(result.Object);
+            Assert.True(result.IsSuccess);
+
+
+            _mapperMock.Verify(m => m.Map<Chat>(dto), Times.Once);
         }
     }
 }

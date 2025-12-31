@@ -18,14 +18,12 @@ namespace MessagingPlatformAPI.Services.Implementation
         private readonly IChatService _chatService;
         private readonly IAccountService _accountService;
         private readonly ICloudinaryService _cloudinaryService;
-        private readonly IHubContext _hubContext;
         private readonly IMapper _mapper;
-        public MessageService(IEntityBaseRepository<Message> @base, IMapper mapper, IChatService chatService, IHubContext hubContext, IAccountService accountService, ICloudinaryService cloudinaryService, IEntityBaseRepository<MessageImage> messageImageBase)
+        public MessageService(IEntityBaseRepository<Message> @base, IMapper mapper, IChatService chatService, IAccountService accountService, ICloudinaryService cloudinaryService, IEntityBaseRepository<MessageImage> messageImageBase)
         {
             _base = @base;
             _mapper = mapper;
             _chatService = chatService;
-            _hubContext = hubContext;
             _accountService = accountService;
             _cloudinaryService = cloudinaryService;
             _messageImageBase = messageImageBase;
