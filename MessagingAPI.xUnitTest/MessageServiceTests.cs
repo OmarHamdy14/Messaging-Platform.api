@@ -82,7 +82,10 @@ namespace MessagingAPI.xUnitTest
 
             _mockRepo.Setup(r => r.Create(It.IsAny<Message>())).Returns(Task.CompletedTask);
 
-            var result = await _messageService.Create(dto);
+            var result = await _messageService.Create(dto, null);
+
+            Assert.NotNull(result);
+            Assert.True(result.IsSuccess);
         }
     }
 }
