@@ -1,1 +1,14 @@
 global using Xunit;
+global using AutoMapper;
+global using MessagingPlatformAPI.Base.Interface;
+global using MessagingPlatformAPI.Helpers.DTOs.MessageDTOs;
+global using MessagingPlatformAPI.Models;
+global using MessagingPlatformAPI.Services.Implementation;
+global using MessagingPlatformAPI.Services.Interface;
+global using Moq;
+global using System;
+global using System.Collections.Generic;
+global using System.Linq;
+global using System.Linq.Expressions;
+global using System.Text;
+global using System.Threading.Tasks;
