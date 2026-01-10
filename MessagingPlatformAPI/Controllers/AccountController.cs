@@ -44,7 +44,7 @@ namespace MessagingPlatformAPI.Controllers
                     _logger.LogWarning("This {UserId} is not found", userId);
                     return NotFound();
                 }
-                _logger.LogInformation("Retreiving {fname} {lname} is done", user.FirstName, user.LastName);
+                _logger.LogInformation("Retreiving {DisplayName} is done", user.DisplayName);
                 return Ok(user);
             }
             catch (Exception ex)
@@ -69,7 +69,7 @@ namespace MessagingPlatformAPI.Controllers
                     _logger.LogWarning("This {name} is not found", name);
                     return NotFound();
                 }
-                _logger.LogInformation("Retreiving {fname} {lname} is done", user.FirstName, user.LastName);
+                _logger.LogInformation("Retreiving {DisplayName} is done", user.DisplayName);
                 return Ok(user);
             }
             catch (Exception ex)
@@ -144,7 +144,7 @@ namespace MessagingPlatformAPI.Controllers
                 user.RefreshToken = authModel.RefreshToken;
                 user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(7);
 
-                _logger.LogInformation("{FName} {lName} login successfully", user.FirstName, user.LastName);
+                _logger.LogInformation("{DisplayName} login successfully", user.DisplayName);
                 return Ok(authModel);
             }
             catch (Exception ex)
@@ -173,7 +173,7 @@ namespace MessagingPlatformAPI.Controllers
                 var result = await _accountService.Update(user, model);
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation("{FName} {lName} is updated successfully", user.FirstName, user.LastName);
+                    _logger.LogInformation("{DisplayName} is updated successfully", user.DisplayName);
                     return Ok(new { Message = "Update is succeeded." });
                 }
                 return BadRequest(result.Errors);
@@ -204,7 +204,7 @@ namespace MessagingPlatformAPI.Controllers
                 var result = await _accountService.ChangePassword(user, model);
                 if (result)
                 {
-                    _logger.LogInformation("{FName} {lName}'password is updated successfully", user.FirstName, user.LastName);
+                    _logger.LogInformation("{DisplayName}'password is updated successfully", user.DisplayName);
                     return Ok(new { Message = "Changing Password is done successfully." });
                 }
                 return Ok(new { Message = "Changing Password is not done." }); // should this respose be ok or badrequest ???
@@ -236,7 +236,7 @@ namespace MessagingPlatformAPI.Controllers
                 var result = await _accountService.ChangeProfilePic(user, pic);
                 if (result.IsSuccess)
                 {
-                    _logger.LogInformation("{FName} {lName}'password is updated successfully", user.FirstName, user.LastName);
+                    _logger.LogInformation("{DisplayName}'password is updated successfully", user.DisplayName);
                     return Ok(new { Message = "Changing Profile Picture is done successfully." });
                 }
                 return Ok(new { Message = "Changing Profile Picture is not done." }); // should this response be ok or badrequest ???

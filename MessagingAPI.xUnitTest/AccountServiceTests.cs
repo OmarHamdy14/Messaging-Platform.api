@@ -6,6 +6,7 @@ using MessagingPlatformAPI.Services.Implementation;
 using MessagingPlatformAPI.Services.Interface;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -23,7 +24,7 @@ namespace MessagingAPI.xUnitTest
         private readonly Mock<ICloudinaryService> _cloudinaryService;
         private readonly Mock<IUserSettingsService> _userSettingsService;
         private readonly Mock<IMapper> _mapper;
-        private readonly Mock<JWT> _jwt;
+        private readonly Mock<IOptions<JWT>> _jwt;
         private readonly Mock<IConfiguration> _confg;
         public AccountServiceTests()
         {
@@ -32,7 +33,7 @@ namespace MessagingAPI.xUnitTest
             _cloudinaryService = new Mock<ICloudinaryService>();
             _userSettingsService = new Mock<IUserSettingsService>();
             _mapper = new Mock<IMapper>();
-            _jwt = new Mock<JWT>();
+            _jwt = new Mock<IOptions<JWT>>();
             _confg = new Mock<IConfiguration>();
 
             _accountService = new AccountService(_userManager.Object, _mapper.Object, _jwt.Object, _cloudinaryService.Object, _profileImageBase.Object, _userSettingsService.Object, _confg.Object);

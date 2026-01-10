@@ -23,7 +23,7 @@ namespace MessagingPlatformAPI.Controllers
             try
             {
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                var res = await _userSettingsService.GetById(userId);
+                var res = await _userSettingsService.GetByUserId(userId);
                 return Ok(res);
             }
             catch (Exception ex)

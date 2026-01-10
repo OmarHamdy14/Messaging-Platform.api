@@ -29,7 +29,7 @@ namespace MessagingPlatformAPI.Services.Implementation
         }
         public async Task<SimpleResponseDTO<Contact>> Create(string userId, string contactId)
         {
-            if(await IsContact(userId,contactId)) return new SimpleResponseDTO<Contact>() { IsSuccess = false, Message = "there is already contact" }
+            if (await IsContact(userId, contactId)) return new SimpleResponseDTO<Contact>() { IsSuccess = false, Message = "there is already contact" };
             var conct = new Contact() { ContactId = contactId, UserId = userId };
             await _base.Create(conct);
             return new SimpleResponseDTO<Contact>() { IsSuccess = true, Message = "", Object = conct };

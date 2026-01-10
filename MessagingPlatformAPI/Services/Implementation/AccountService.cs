@@ -8,6 +8,7 @@ using MessagingPlatformAPI.Models;
 using MessagingPlatformAPI.Services.Interface;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Linq;
 using System.IdentityModel.Tokens.Jwt;
@@ -26,12 +27,12 @@ namespace MessagingPlatformAPI.Services.Implementation
         private readonly IMapper _mapper;
         private readonly JWT _jwt;
         private readonly IConfiguration _confg;
-        public AccountService(UserManager<ApplicationUser> userManager, IMapper mapper, JWT jwt, ICloudinaryService cloudinaryService, 
+        public AccountService(UserManager<ApplicationUser> userManager, IMapper mapper, IOptions<JWT> jwt, ICloudinaryService cloudinaryService, 
             IEntityBaseRepository<ProfileImage> profileImageBase, IUserSettingsService userSettingsService, IConfiguration confg)
         {
             _userManager = userManager;
             _mapper = mapper;
-            _jwt = jwt;
+            _jwt = jwt.Value;
             _cloudinaryService = cloudinaryService;
             _profileImageBase = profileImageBase;
             _userSettingsService = userSettingsService;
@@ -181,7 +182,7 @@ namespace MessagingPlatformAPI.Services.Implementation
             user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(7);
             await _userManager.UpdateAsync(user);
 
-            return new SimpleResponseDTO<RefreshTokenResponseDTO>() { IsSuccess=true, Message="refresh tokens is succeeded", Object= new RefreshTokenResponseDTO(){AccessToken=newAccess, RefreshToken= newRefresh };
+            return new SimpleResponseDTO<RefreshTokenResponseDTO>() { IsSuccess=true, Message="refresh tokens is succeeded", Object= new RefreshTokenResponseDTO() { AccessToken = newAccess, RefreshToken = newRefresh } };
         }
         private ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
         {

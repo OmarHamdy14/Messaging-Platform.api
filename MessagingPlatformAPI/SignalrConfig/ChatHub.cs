@@ -103,7 +103,7 @@ namespace MessagingPlatformAPI.SignalrConfig
             //await Clients.Group(ChatId.ToString()).ReceiveMessage(user.UserName,msg);
             await _messageService.Create(new CreateMessageDTO() { Content = model.Content, ChatId = model.ChatId, UserId = userId }, files);
             await Clients.Group(model.ChatId.ToString()).SendAsync("ReceiveMessage", user.UserName, model.Content);
-            _logger.LogInformation("Sending message from user '{fname} {lname}' is succedded", user.FirstName, user.LastName);
+            _logger.LogInformation("Sending message from user '{DisplayName}' is succedded", user.DisplayName);
         }
         
         public async Task DeleteMessage(Guid MessageId, bool IsForEveryone)

@@ -81,7 +81,7 @@ namespace MessagingPlatformAPI
                     };
                 });
 
-            var firebaseCredential = GoogleCredential.FromFile("");
+            var firebaseCredential = GoogleCredential.FromFile("hh");
             FirebaseApp.Create(new AppOptions
             {
                 Credential = firebaseCredential

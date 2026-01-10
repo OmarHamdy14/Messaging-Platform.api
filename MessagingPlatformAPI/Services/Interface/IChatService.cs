@@ -13,7 +13,7 @@ namespace MessagingPlatformAPI.Services.Interface
 
         Task<SimpleResponseDTO<Chat>> LeaveGroupChat(Guid ChatId);
         Task SaveChanges(Chat c);
-        Task<SimpleResponseDTO<Chat>> ChangeChatPic(Chat chat, IFormFile pic);
-        Task<SimpleResponseDTO<Chat>> DeleteChatPic(string ImagePublicId);
+        Task<SimpleResponseDTO<ChatImage>> ChangeChatPic(Chat chat, IFormFile pic);
+        Task<SimpleResponseDTO<ChatImage>> DeleteChatPic(string ImagePublicId);
     }
 }
