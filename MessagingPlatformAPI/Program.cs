@@ -28,16 +28,20 @@ namespace MessagingPlatformAPI
             builder.Services.AddDbContext<AppDbContext>(op => op.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<AppDbContext>();
 
+            builder.Services.AddScoped<IEntityBaseRepository<BlockedUser>, EntityBaseRepository<BlockedUser>>();
             builder.Services.AddScoped<IEntityBaseRepository<Chat>, EntityBaseRepository<Chat>>();
+            builder.Services.AddScoped<IEntityBaseRepository<Chat_Member>, EntityBaseRepository<Chat_Member>>();
+            builder.Services.AddScoped<IEntityBaseRepository<ChatImage>, EntityBaseRepository<ChatImage>>();
+            builder.Services.AddScoped<IEntityBaseRepository<Contact>, EntityBaseRepository<Contact>>();
+            builder.Services.AddScoped<IEntityBaseRepository<DeviceToken>, EntityBaseRepository<DeviceToken>>();
+            builder.Services.AddScoped<IEntityBaseRepository<GroupInviteLink>, EntityBaseRepository<GroupInviteLink>>();
             builder.Services.AddScoped<IEntityBaseRepository<Message>, EntityBaseRepository<Message>>();
+            builder.Services.AddScoped<IEntityBaseRepository<MessageImage>, EntityBaseRepository<MessageImage>>();
+            builder.Services.AddScoped<IEntityBaseRepository<MessageStatus>, EntityBaseRepository<MessageStatus>>();
+            builder.Services.AddScoped<IEntityBaseRepository<ProfileImage>, EntityBaseRepository<ProfileImage>>();
             builder.Services.AddScoped<IEntityBaseRepository<Reaction>, EntityBaseRepository<Reaction>>();
             builder.Services.AddScoped<IEntityBaseRepository<UserConnection>, EntityBaseRepository<UserConnection>>();
-            builder.Services.AddScoped<IEntityBaseRepository<Chat_Member>, EntityBaseRepository<Chat_Member>>();
-            builder.Services.AddScoped<IEntityBaseRepository<BlockedUser>, EntityBaseRepository<BlockedUser>>();
-            builder.Services.AddScoped<IEntityBaseRepository<DeviceToken>, EntityBaseRepository<DeviceToken>>();
             builder.Services.AddScoped<IEntityBaseRepository<UserSettings>, EntityBaseRepository<UserSettings>>();
-            builder.Services.AddScoped<IEntityBaseRepository<Contact>, EntityBaseRepository<Contact>>();
-            builder.Services.AddScoped<IEntityBaseRepository<GroupInviteLink>, EntityBaseRepository<GroupInviteLink>>();
 
             builder.Services.AddScoped<IAccountService, AccountService>();
             builder.Services.AddScoped<IChatService, ChatService>();
@@ -52,6 +56,8 @@ namespace MessagingPlatformAPI
             builder.Services.AddScoped<IUserSettingsService, UserSettingsService>();
             builder.Services.AddScoped<IContactService, ContactService>();
             builder.Services.AddScoped<IGroupInviteLinkService, GroupInviteLinkService>();
+            builder.Services.AddScoped<INotificationService, NotificationService>();
+            builder.Services.AddScoped<IPresenseTrackerService, PresenseTrackerService>();
 
             builder.Logging.ClearProviders();
             builder.Logging.AddConsole();
@@ -81,10 +87,17 @@ namespace MessagingPlatformAPI
                     };
                 });
 
-            var firebaseCredential = GoogleCredential.FromFile(@"G:\Projects\MessagingPlatformAPI\MessagingPlatformAPI\Credentials\firebase-service-account.json");
+            /*var firebaseCredential = GoogleCredential.FromFile("");
             FirebaseApp.Create(new AppOptions
             {
                 Credential = firebaseCredential
+            });*/
+
+            var fakeCredential = GoogleCredential.FromAccessToken("fake-token");
+            FirebaseApp.Create(new AppOptions
+            {
+                Credential = fakeCredential,
+                ProjectId = "dummy-project"
             });
 
             builder.Services.AddAuthentication(); // ??????????
@@ -101,8 +114,7 @@ namespace MessagingPlatformAPI
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
-                app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseExceptionHandler("/error");
             }
             app.MapHub<ChatHub>("/chathub");
 
@@ -113,10 +125,11 @@ namespace MessagingPlatformAPI
             app.UseAuthorization();
 
 
-            app.UseExceptionHandler("api/Error/error");
 
             app.MapControllers();
 
+                app.UseSwagger();
+                app.UseSwaggerUI();
             app.Run();
         }
     }

@@ -8,8 +8,8 @@ namespace MessagingPlatformAPI.Services.Implementation
     public class BlockingService : IBlockingService
     {
         private readonly IEntityBaseRepository<BlockedUser> _base;
-        private readonly ILogger _logger;
-        public BlockingService(IEntityBaseRepository<BlockedUser> @base, ILogger logger)
+        private readonly ILogger<BlockingService> _logger;
+        public BlockingService(IEntityBaseRepository<BlockedUser> @base, ILogger<BlockingService> logger)
         {
             _base = @base;
             _logger = logger;
